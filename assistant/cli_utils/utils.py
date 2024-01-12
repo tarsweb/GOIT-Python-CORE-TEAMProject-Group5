@@ -1,5 +1,7 @@
 from functools import wraps
 
+from .argspars import parser
+
 HANDLERS = {}
 COMMAND_PROMT = ">>> "
 COMMAND_USE_SPACER = ("show all", "good bye")
@@ -43,6 +45,10 @@ def input_error(func):
 
 
 def command_parser(command_string: str) -> tuple:
+    parser.print_help()
+    
+    print(parser.parse_args(command_string.strip()))
+
     command = command_string.strip()
     if command.lower() in COMMAND_USE_SPACER:
         list_command = [command]
