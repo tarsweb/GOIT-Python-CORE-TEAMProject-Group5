@@ -1,4 +1,5 @@
-from .addressbook import AddressBook, Record
+from .addressbook import AddressBook
+from .record import Record
 from cli_utils import register, get_success_message
 
 

@@ -6,17 +6,26 @@ import addressbook
 def hello() -> str:
     return "How can I help you?"
 
+
 @register("add")
-def add(num: int ) -> int:
+def add(num: int) -> int:
     if not isinstance(num, int):
         try:
             num = int(num)
-        except ValueError :
+        except ValueError:
             num = 0
 
     return num * 2
 
-if __name__ == "__main__":
+
+def main() -> None:
+    import os
+
+    print(os.getcwd())
     addressbook.initialize()
     print(show_register_command())
     listener()
+
+
+if __name__ == "__main__":
+    main()
