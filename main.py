@@ -6,15 +6,17 @@ import addressbook
 def hello() -> str:
     return "How can I help you?"
 
+
 @register("add")
-def add(num: int ) -> int:
+def add(num: int) -> int:
     if not isinstance(num, int):
         try:
             num = int(num)
-        except ValueError :
+        except ValueError:
             num = 0
 
     return num * 2
+
 
 if __name__ == "__main__":
     addressbook.initialize()
