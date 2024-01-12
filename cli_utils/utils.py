@@ -21,6 +21,10 @@ def get_success_message(message_success: str) -> str:
     return f"{SUCCESS}{message_success}{RESET}"
 
 
+def get_error_message(message_error: str) -> str:
+    return f"{ERROR}{message_error}{RESET}"
+
+
 def input_error(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -85,4 +89,4 @@ def listener():
             else:
                 print(HANDLERS[command]())
         else:
-            print(f"{ERROR}Unknown command : {command} {RESET}")
+            print(get_error_message(f"Unknown command : {command}"))

@@ -1,25 +1,25 @@
 from .addressbook import AddressBook, Record
 from cli_utils import register, get_success_message
 
-book = AddressBook()
 
+def initialize():
+    book = AddressBook()
 
-@register("add_record")
-def add_record(name: str) -> str:
-    """
-    Add contact with name and phone
-    """
-    record = Record(name)
+    @register("add_record")
+    def add_record(name: str) -> str:
+        """
+        Add contact with name and phone
+        """
+        record = Record(name)
 
-    book.add_record(record)
+        book.add_record(record)
 
-    return get_success_message(f"Contact `{name}`added")
+        return get_success_message(f"Contact `{name}`added")
 
-
-@register("show_record")
-def show_record():
-    """
-    Show all record
-    """
-    list_record = list(get_success_message(f"{record}") for record in book)
-    return "\n".join(list_record)
+    @register("show_record")
+    def show_record():
+        """
+        Show all record
+        """
+        list_record = list(get_success_message(f"{record}") for record in book)
+        return "\n".join(list_record)

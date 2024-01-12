@@ -1,6 +1,7 @@
 from cli_utils import register, listener, show_register_command
 import addressbook
 
+
 @register("hello")
 def hello() -> str:
     return "How can I help you?"
@@ -16,5 +17,6 @@ def add(num: int ) -> int:
     return num * 2
 
 if __name__ == "__main__":
+    addressbook.initialize()
     print(show_register_command())
     listener()
