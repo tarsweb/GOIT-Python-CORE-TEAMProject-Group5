@@ -2,10 +2,12 @@ from cli_utils import register, listener, show_register_command
 import addressbook
 import notes
 
+
 # Example (приклад)
 @register("hello")
 def hello() -> str:
     return "How can I help you?"
+
 
 # Example (приклад)
 @register("add")
