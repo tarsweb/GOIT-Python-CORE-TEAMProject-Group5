@@ -6,7 +6,7 @@ from cli_utils import register, get_success_message
 def initialize():
     book = AddressBook()
 
-    @register("add_record")
+    @register("contact-add")
     def add_record(name: str) -> str:
         """
         Add contact with name and phone
