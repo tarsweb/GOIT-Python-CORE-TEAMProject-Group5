@@ -18,10 +18,7 @@ def add(num: int) -> int:
     return num * 2
 
 
-def main() -> None:
-    import os
-
-    print(os.getcwd())
+def main():
     addressbook.initialize()
     print(show_register_command())
     listener()
