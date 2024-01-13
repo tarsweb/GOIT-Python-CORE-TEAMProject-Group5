@@ -27,6 +27,9 @@ class Email(Field):
         else:
             raise ValueError ("Invalid email")
 
+    def __str__(self):
+        return "unknown" if self.email is None else str(self.email)
+
 
 # from .fields import Field
 
