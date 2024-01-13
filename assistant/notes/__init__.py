@@ -6,7 +6,9 @@ from cli_utils import register, get_success_message
 def initialize():
     notes = Note()
 
-    @register("note-add")
+    section = "notes"
+
+    @register("add-note", section=section)
     def add(text: str) -> None:
         """
         Add notes
@@ -18,7 +20,7 @@ def initialize():
 
         return get_success_message(f"Note `{text}` added")
 
-    @register("note-show")
+    @register("show-notes", section=section)
     def show() -> str:
         """
         Show all notes
