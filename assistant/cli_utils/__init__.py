@@ -9,6 +9,7 @@ from .utils import (
     HANDLERS_SECTIONS,
     COMMAND_FOR_BREAK,
 )
+from .printing import print_records
 
 
 def add_system_command():
@@ -44,4 +45,5 @@ __all__ = [
     "get_error_message",
     "get_warning_message",
     "show_register_command",
+    "print_records",
 ]
