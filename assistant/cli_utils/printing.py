@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from prettytable.colortable import ColorTable, Theme
 
 
-def print_records(records: [ClassVar]) -> None:
+def print_records(records: [ClassVar]) -> ColorTable:
     pt = ColorTable(
         theme=Theme(default_color="34"),
         border=True,
@@ -29,4 +29,5 @@ def print_records(records: [ClassVar]) -> None:
     pt.align = "c"
     pt.align["name"] = "l"
     pt.align["phones"] = "l"
-    print(pt)
+    
+    return pt

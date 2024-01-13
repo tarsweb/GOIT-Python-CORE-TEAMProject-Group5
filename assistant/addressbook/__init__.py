@@ -5,12 +5,11 @@ from cli_utils import (
     get_success_message,
     get_warning_message,
     listener_command_param as listener_field,
-    print_records
+    print_records,
 )
 
 from .addressbook import AddressBook
 from .record import Record
-
 
 
 def initialize():
@@ -112,9 +111,8 @@ def initialize():
         """
         Show all record
         """
-        print_records(list(book.data.values()))
         # list_record = list(get_success_message(f"{book[record]}") for record in book)
-        return ""
+        return print_records(list(book.data.values()))
 
     @register("del-contact", section=section, data_for_prompt=book)
     @save_data
