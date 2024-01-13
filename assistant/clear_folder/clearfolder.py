@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 import zipfile
+from pathlib import Path
 
 def normalize(name):
     translit_dict = {
@@ -29,18 +30,18 @@ def normalize(name):
 
 
 def move_files(source, destination):
-    for root, dirs, files in os.walk(source):
+    for root, _, files in os.walk(source):
         for file in files:
             file_path = os.path.join(root, file)
             destination_path = os.path.join(destination, file)
-            shutil.move(file_path, destination_path)
+            shutil.move(str(file_path), str(destination_path))
 
 
 def remove_empty_folders(folder):
-    for root, dirs, files in os.walk(folder, topdown=False):
+    for root, dirs, _ in os.walk(folder, topdown=False):
         for i in dirs:
             dir_path = os.path.join(root, i)
-            if not os.listdir(dir_path):
+            if not os.listdir(str(dir_path)):
                 os.rmdir(dir_path)
 
 
@@ -109,36 +110,36 @@ def move_unknown_files(unknown_files, destination_path):
     for file in unknown_files:
         file_path = os.path.join(destination_path, file)
         new_file_path = os.path.join(unknown_files_path, file)
-        shutil.move(file_path, new_file_path)
+        shutil.move(str(file_path), str(new_file_path))
 
 
 def organize_files(files, destination_path):
     for category, file_list in files.items():
         if category == 'archives':
-            category_path = os.path.join(destination_path, category)
-            os.makedirs(category_path, exist_ok=True)
+            category_path = Path(destination_path) / category
+            category_path.mkdir(parents=True, exist_ok=True)
 
             for file in file_list:
-                file_path = os.path.join(destination_path, file)
+                file_path = Path(destination_path) / file
                 archive_name = os.path.splitext(file)[0]
-                archive_path = os.path.join(category_path, archive_name)
-                os.makedirs(archive_path, exist_ok=True)
+                archive_path = category_path / archive_name
+                archive_path.mkdir(parents=True, exist_ok=True)
 
-                if zipfile.is_zipfile(file_path):
-                    with zipfile.ZipFile(file_path, 'r') as zip_ref:
-                        zip_ref.extractall(archive_path)
-                    os.remove(file_path)
+                if zipfile.is_zipfile(str(file_path)):
+                    with zipfile.ZipFile(str(file_path), 'r') as zip_ref:
+                        zip_ref.extractall(str(archive_path))
+                    file_path.unlink()
                 else:
                     print(f"Unsupported archive format: {file}")
 
         elif category in ['video', 'audio', 'documents', 'images']:
-            category_path = os.path.join(destination_path, category)
-            os.makedirs(category_path, exist_ok=True)
+            category_path = Path(destination_path) / category
+            category_path.mkdir(parents=True, exist_ok=True)
 
             for file in file_list:
-                file_path = os.path.join(destination_path, file)
-                new_file_path = os.path.join(category_path, file)
-                shutil.move(file_path, new_file_path)
+                file_path = Path(destination_path) / file
+                new_file_path = category_path / file
+                shutil.move(str(file_path), str(new_file_path))
 
         else:
             print(f"Unknown category: {category}")
