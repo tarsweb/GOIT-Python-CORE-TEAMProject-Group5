@@ -1,10 +1,9 @@
 from functools import wraps
 
 # from prompt_toolkit import prompt
-from prompt_toolkit.completion import NestedCompleter
-
-from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit import PromptSession
+from prompt_toolkit.completion import NestedCompleter
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
 
 HANDLERS = {}
@@ -105,19 +104,28 @@ def update_data_for_command(completer: NestedCompleter) -> None:
     for k, v in DATA_FOR_COMMAND.items():
         completer.options[k] = NestedCompleter.from_nested_dict(dict.fromkeys(v))
 
+
+def dict_commands() -> dict:
+    commands = dict.fromkeys(HANDLERS)
+    commands.update(dict.fromkeys(COMMAND_FOR_BREAK).items())
+
+    return commands
+
+
 def listener() -> None:
     session = PromptSession()
 
-    dict_commands = dict.fromkeys(HANDLERS)
-    dict_commands.update(dict.fromkeys(COMMAND_FOR_BREAK).items())
-    
-    completer = NestedCompleter.from_nested_dict(dict_commands)
+    completer = NestedCompleter.from_nested_dict(dict_commands())
     update_data_for_command(completer)
 
     while True:
         # command_user = input(COMMAND_PROMPT)
         command_user = session.prompt(
-            COMMAND_PROMPT, completer=completer, auto_suggest=AutoSuggestFromHistory()
+            COMMAND_PROMPT,
+            completer=completer,
+            auto_suggest=AutoSuggestFromHistory(),
+            complete_while_typing=True,
+            mouse_support=True,
         )
 
         if len(command_user) == 0:
