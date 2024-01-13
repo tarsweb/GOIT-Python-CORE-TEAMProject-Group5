@@ -1,7 +1,10 @@
 from functools import wraps
 
-from prompt_toolkit import prompt
+# from prompt_toolkit import prompt
 from prompt_toolkit.completion import NestedCompleter
+
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit import PromptSession
 
 HANDLERS = {}
 HANDLERS_SECTIONS = {}
@@ -94,6 +97,9 @@ def listener_command_param(add_prompt: str, required: bool) -> tuple:
 
 
 def listener() -> None:
+
+    session = PromptSession()
+
     dict_commands = dict.fromkeys(HANDLERS)
     dict_commands.update(dict.fromkeys(COMMAND_FOR_BREAK).items())
 
@@ -101,7 +107,7 @@ def listener() -> None:
 
     while True:
         # command_user = input(COMMAND_PROMPT)
-        command_user = prompt(COMMAND_PROMPT, completer=completer)
+        command_user = session.prompt(COMMAND_PROMPT, completer=completer, auto_suggest=AutoSuggestFromHistory())
 
         if not len(command_user):
             continue
