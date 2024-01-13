@@ -3,6 +3,7 @@ from functools import wraps
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import NestedCompleter
 
+
 HANDLERS = {}
 HANDLERS_SECTIONS = {}
 COMMAND_PROMT = ">>> "
@@ -95,7 +96,7 @@ def listener() -> None:
         # command_user = input(COMMAND_PROMT)
         command_user = prompt(COMMAND_PROMT, completer=completer)
 
-        if not len(command_user):
+        if len(command_user) == 0:
             continue
 
         command, *args = command_parser(command_user)
