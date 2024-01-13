@@ -16,15 +16,15 @@ class Email(Field):
 
     @staticmethod
     def __is_valid_email(email: str) -> str | Exception:
-        email_pattern = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$")
-        if isinstance(email, str):
-            match_object = email_pattern.match(email)
-            print(match_object)
-            if match_object is not None:
-                return match_object.group()
-            else:
+        if not email is None:
+            email_pattern = re.compile(
+                r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$"
+            )
+            if isinstance(email, str):
+                match_object = email_pattern.match(email)
+                if match_object is not None:
+                    return match_object.group()
                 raise ValueError("Invalid email")
-        else:
             raise ValueError("Invalid email")
 
     def __str__(self):
