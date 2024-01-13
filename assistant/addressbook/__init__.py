@@ -49,13 +49,12 @@ def initialize():
                 result_input = listener_field(fields, required)
                 if len(result_input) == 0 and not required:
                     break
-                
+
                 try:
                     handler(result_input)
                     break
                 except Exception as e:
                     print(get_warning_message(handler.__name__, e))
-              
 
         # if not record.find_phone(phone_number) is None:
         #     raise ValueError(f"Phone number `{phone_number}` in contact `{name}` exist")
@@ -66,7 +65,7 @@ def initialize():
 
         return get_success_message(f"Contact `{name}` added")
 
-    @register("edit-contact", section=section)
+    @register("edit-contact", section=section, data_for_prompt=book)
     @save_data
     def edit(name: str) -> str:
         record = book.find(name)
@@ -74,7 +73,7 @@ def initialize():
         if record is None:
             raise ValueError(f"Contact with name `{name}` not exist")
 
-        return get_success_message(f"Contact `{name}`edit")
+        return get_success_message(f"Contact `{name}` edit")
 
     @register("edit-contact-birthday", section=section)
     @save_data
@@ -83,7 +82,7 @@ def initialize():
 
         if record is None:
             raise ValueError(f"Contact with name `{name}` not exist")
-        
+
         if date is None:
             record.remove_birthday()
         else:
