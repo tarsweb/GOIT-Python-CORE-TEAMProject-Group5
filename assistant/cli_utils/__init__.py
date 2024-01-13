@@ -1,3 +1,4 @@
+from copy import deepcopy
 from .utils import (
     register,
     listener,
@@ -9,21 +10,24 @@ from .utils import (
 )
 
 
+def add_system_command():
+    new_commands_dict = deepcopy(HANDLERS_SECTIONS)  # do copy
+
+    new_commands_dict.setdefault("system", [])
+    new_commands_dict["system"] += list(COMMAND_FOR_BREAK)
+
+    return new_commands_dict
+
+
 def show_register_command() -> str:
-
-    _handlers_section = dict(HANDLERS_SECTIONS) # do copy
-
-    _handlers_section.setdefault("system", [])
-    _handlers_section["system"].extend(list(COMMAND_FOR_BREAK))
+    all_commmands = add_system_command()
 
     commands = list(
         f"{section.upper()} : {', '.join(values)}"
-        for section, values in _handlers_section.items()
+        for section, values in all_commmands.items()
     )
     format_commands = "\n\t ".join(commands)
-    return get_success_message(
-        f"All command : \n\t {format_commands}"
-    )
+    return get_success_message(f"All command : \n\t {format_commands}")
 
 
 @register("help", "system")
