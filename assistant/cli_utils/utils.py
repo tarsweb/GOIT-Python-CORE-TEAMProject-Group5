@@ -6,6 +6,7 @@ from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit import PromptSession
 
+
 HANDLERS = {}
 HANDLERS_SECTIONS = {}
 COMMAND_PROMPT = ">>> "
@@ -116,7 +117,7 @@ def listener() -> None:
             COMMAND_PROMPT, completer=completer, auto_suggest=AutoSuggestFromHistory()
         )
 
-        if not len(command_user):
+        if len(command_user) == 0:
             continue
 
         command, *args = command_parser(command_user)

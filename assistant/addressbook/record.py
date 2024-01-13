@@ -1,10 +1,10 @@
+from datetime import date
+
 from .name import Name
 from .email import Email
 from .address import Address
 from .birthday import Birthday
 from .phone import Phone
-
-from datetime import date
 
 
 class Record:
@@ -35,7 +35,7 @@ class Record:
         phones_find = tuple(
             filter(lambda phone: phone.phone == phone_number, self.phones)
         )
-        if len(phones_find):
+        if len(phones_find) > 0:
             return phones_find[0]
 
     def add_birthday(self, day_birthday: str) -> None:
@@ -66,17 +66,20 @@ class Record:
 
             return (current_birthday - current_day).days
 
-    def add_address(self, address : str) -> None:
+    def add_address(self, address: str) -> None:
         self.address.address = address
-    
+
     def remove_address(self) -> None:
         self.address.address = None
 
-    def add_email(self, email : str) -> None:
+    def add_email(self, email: str) -> None:
         self.email.email = email
-    
+
     def remove_email(self) -> None:
         self.email.email = None
 
     def __str__(self) -> str:
-        return f"Contact Name: `{self.name}` Address: `{self.address}` E-mail: `{self.email}` Birthday: `{self.birthday}` Phones: `{'; '.join(p.value for p in self.phones)}`"
+        return (
+            f"Contact Name: `{self.name}` Address: `{self.address}` E-mail: `{self.email}` ",
+            f"Birthday: `{self.birthday}` Phones: `{'; '.join(p.value for p in self.phones)}`",
+        )
