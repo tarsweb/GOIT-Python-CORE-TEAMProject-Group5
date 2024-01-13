@@ -101,15 +101,18 @@ def listener_command_param(add_prompt: str, required: bool) -> tuple:
     return result_input
 
 
+def update_data_for_command(completer: NestedCompleter) -> None:
+    for k, v in DATA_FOR_COMMAND.items():
+        completer.options[k] = NestedCompleter.from_nested_dict(dict.fromkeys(v))
+
 def listener() -> None:
     session = PromptSession()
 
     dict_commands = dict.fromkeys(HANDLERS)
-    for k, v in DATA_FOR_COMMAND.items():
-        dict_commands[k] = dict.fromkeys(v)
     dict_commands.update(dict.fromkeys(COMMAND_FOR_BREAK).items())
-
+    
     completer = NestedCompleter.from_nested_dict(dict_commands)
+    update_data_for_command(completer)
 
     while True:
         # command_user = input(COMMAND_PROMPT)
@@ -133,3 +136,5 @@ def listener() -> None:
                 print(HANDLERS[command]())
         else:
             print(get_error_message(f"Unknown command : {command}"))
+
+        update_data_for_command(completer)
