@@ -79,4 +79,4 @@ class Record:
         self.email.email = None
 
     def __str__(self) -> str:
-        return f"Contact name: {self.name} address: {self.address} email: {self.email} birthday: {self.birthday} phones: {'; '.join(p.value for p in self.phones)}"
+        return f"Contact Name: `{self.name}` Address: `{self.address}` E-mail: `{self.email}` Birthday: `{self.birthday}` Phones: `{'; '.join(p.value for p in self.phones)}`"
