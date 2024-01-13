@@ -80,6 +80,6 @@ class Record:
 
     def __str__(self) -> str:
         return (
-            f"Contact name: {self.name} address: {self.address} email: {self.email} ",
-            f"birthday:{self.birthday} phones: {'; '.join(p.value for p in self.phones)}",
+            f"Contact Name: `{self.name}` Address: `{self.address}` E-mail: `{self.email}` ",
+            f"Birthday: `{self.birthday}` Phones: `{'; '.join(p.value for p in self.phones)}`",
         )

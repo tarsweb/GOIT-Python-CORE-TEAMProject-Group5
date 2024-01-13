@@ -1,12 +1,15 @@
 from functools import wraps
 
-from prompt_toolkit import prompt
+# from prompt_toolkit import prompt
 from prompt_toolkit.completion import NestedCompleter
+
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit import PromptSession
 
 
 HANDLERS = {}
 HANDLERS_SECTIONS = {}
-COMMAND_PROMT = ">>> "
+COMMAND_PROMPT = ">>> "
 COMMAND_USE_SPACER = ("show all", "good bye")
 COMMAND_FOR_BREAK = ("good bye", "close", "exit")
 # COMMAND_HELP = ("help",)
@@ -82,19 +85,30 @@ def register(commmand_name: str, section: str = None):
     return register_wrapper
 
 
-def listener_command():
-    pass
+def listener_command_param(add_prompt: str, required: bool) -> tuple:
+    while True :
+        param = input(f"{COMMAND_PROMPT}{add_prompt} : ")
+
+        result_input = param.strip()
+
+        if not (required and len(result_input) == 0):
+            break
+
+    return result_input
 
 
 def listener() -> None:
+
+    session = PromptSession()
+
     dict_commands = dict.fromkeys(HANDLERS)
     dict_commands.update(dict.fromkeys(COMMAND_FOR_BREAK).items())
 
     completer = NestedCompleter.from_nested_dict(dict_commands)
 
     while True:
-        # command_user = input(COMMAND_PROMT)
-        command_user = prompt(COMMAND_PROMT, completer=completer)
+        # command_user = input(COMMAND_PROMPT)
+        command_user = session.prompt(COMMAND_PROMPT, completer=completer, auto_suggest=AutoSuggestFromHistory())
 
         if len(command_user) == 0:
             continue

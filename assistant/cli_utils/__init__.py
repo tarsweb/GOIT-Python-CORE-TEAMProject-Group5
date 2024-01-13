@@ -2,6 +2,7 @@ from copy import deepcopy
 from .utils import (
     register,
     listener,
+    listener_command_param,
     get_success_message,
     get_warning_message,
     get_error_message,
@@ -38,6 +39,7 @@ def command_help():
 __all__ = [
     "register",
     "listener",
+    "listener_command_param",
     "get_success_message",
     "get_error_message",
     "get_warning_message",
