@@ -1,6 +1,7 @@
 from cli_utils import register, listener, show_register_command
 import addressbook
 import notes
+import clear_folder
 
 
 # Example (приклад)
@@ -24,6 +25,8 @@ def add(num: int) -> int:
 def main():
     addressbook.initialize()
     notes.initialize()
+    clear_folder.initialize()
+    
     print(show_register_command())
     listener()
 
