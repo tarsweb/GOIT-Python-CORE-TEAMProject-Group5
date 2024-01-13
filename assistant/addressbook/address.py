@@ -10,7 +10,7 @@ class Address(Field):
         return self.value
 
     @address.setter
-    def email(self, value):
+    def address(self, value):
         self.value = value
 
     def __str__(self):
