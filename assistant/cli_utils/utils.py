@@ -1,6 +1,7 @@
 from functools import wraps
 
 HANDLERS = {}
+HANDLERS_SECTIONS = {}
 COMMAND_PROMT = ">>> "
 COMMAND_USE_SPACER = ("show all", "good bye")
 COMMAND_FOR_BREAK = ("good bye", "close", "exit")
@@ -55,7 +56,7 @@ def command_parser(command_string: str) -> tuple:
     return list_command[0].lower(), *list_command[1:]
 
 
-def register(commmand_name: str):
+def register(commmand_name: str, section: str = None):
     def register_wrapper(func):
         @input_error
         @wraps(func)
@@ -64,13 +65,17 @@ def register(commmand_name: str):
             return result
 
         HANDLERS[commmand_name] = wrapper
+        
+        key_for_section = "users" if  not section else section
+        HANDLERS_SECTIONS.setdefault(key_for_section, [])
+        HANDLERS_SECTIONS[key_for_section].append(commmand_name)
 
         return wrapper
 
     return register_wrapper
 
 
-def listener():
+def listener() -> None:
     while True:
         command_user = input(COMMAND_PROMT)
 
