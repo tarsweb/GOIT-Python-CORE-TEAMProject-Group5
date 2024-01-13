@@ -1,5 +1,6 @@
-from fields import Field
 import re
+from .fields import Field
+
 
 class Email(Field):
     def __init__(self, email: str) -> None:
@@ -13,17 +14,18 @@ class Email(Field):
     def email(self, email: str):
         self.value = self.__is_valid_email(email)
 
-    email_pattern = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$')
+    @staticmethod
+    def __is_valid_email(email: str) -> str | Exception:
+        if not email is None:
+            email_pattern = re.compile(
+                r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$"
+            )
+            if isinstance(email, str):
+                match_object = email_pattern.match(email)
+                if match_object is not None:
+                    return match_object.group()
+                raise ValueError("Invalid email")
+            raise ValueError("Invalid email")
 
-    def __is_valid_email(self, email):
-        if isinstance(email, str):
-            match_object = self.email_pattern.match(email)
-            print(match_object)
-            if match_object is not None:
-                print(0)
-                return match_object.group()
-            else:
-                print('Invalid email')
-        else:
-            print('Invalid email')
-
+    def __str__(self):
+        return "unknown" if self.email is None else str(self.email)
