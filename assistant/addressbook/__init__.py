@@ -113,7 +113,7 @@ def initialize():
         list_record = list(get_success_message(f"{book[record]}") for record in book)
         return "\n".join(list_record)
 
-    @register("del-contact", section=section)
+    @register("del-contact", section=section, data_for_prompt=book)
     @save_data
     def delete(name: str) -> str:
         """
