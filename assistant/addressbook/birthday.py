@@ -17,8 +17,8 @@ class Birthday(Field):
     @staticmethod
     def __is_valid_birthday(birthday: str) -> bool:
         if not birthday is None:
-            date_list_of_birthday = [int(i) for i in birthday.split(".")]
             try:
+                date_list_of_birthday = [int(i) for i in birthday.split(".")]
                 date_birthday = date(*date_list_of_birthday)
                 return date_birthday
             except Exception:  # Exception on any types
