@@ -1,6 +1,11 @@
 from .addressbook import AddressBook
 from .record import Record
-from cli_utils import register, get_success_message
+from cli_utils import (
+    register,
+    get_success_message,
+    get_warning_message,
+    listener_command_param as listener_field,
+)
 
 from functools import wraps
 
@@ -29,6 +34,29 @@ def initialize():
         if record is None:
             record = Record(name)
 
+        # key : "field name" , value : tuple(handler, required (True | False)) | handler
+        fields_contact = {
+            f"add-contact `{name}` address": record.add_address,
+            f"add-contact `{name}` email": (record.add_email, True),
+            f"add-contact `{name}` birthday": record.add_birthday,
+        }
+
+        for fields, handler in fields_contact.items():
+            required = False
+            if isinstance(handler, tuple):
+                handler, required = handler
+            while True:
+                result_input = listener_field(fields, required)
+                if len(result_input) == 0 and not required:
+                    break
+                
+                try:
+                    handler(result_input)
+                    break
+                except Exception as e:
+                    print(get_warning_message(handler.__name__, e))
+              
+
         # if not record.find_phone(phone_number) is None:
         #     raise ValueError(f"Phone number `{phone_number}` in contact `{name}` exist")
 
@@ -36,7 +64,7 @@ def initialize():
 
         book.add(record)
 
-        return get_success_message(f"Contact `{name}`added")
+        return get_success_message(f"Contact `{name}` added")
 
     @register("edit-contact", section=section)
     @save_data
@@ -47,6 +75,21 @@ def initialize():
             raise ValueError(f"Contact with name `{name}` not exist")
 
         return get_success_message(f"Contact `{name}`edit")
+
+    @register("edit-contact-birthday", section=section)
+    @save_data
+    def edit_birthday(name: str, date: str = None) -> str:
+        record = book.find(name)
+
+        if record is None:
+            raise ValueError(f"Contact with name `{name}` not exist")
+        
+        if date is None:
+            record.remove_birthday()
+        else:
+            record.edit_birthday(date)
+
+        return get_success_message(f"Contact `{name}` birthday edit")
 
     @register("search-contact", section=section)
     def search(string_search: str):
