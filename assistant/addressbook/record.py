@@ -66,5 +66,17 @@ class Record:
 
             return (current_birthday - current_day).days
 
+    def add_address(self, address : str) -> None:
+        self.address.address = address
+    
+    def remove_address(self) -> None:
+        self.address.address = None
+
+    def add_email(self, email : str) -> None:
+        self.email.email = email
+    
+    def remove_email(self) -> None:
+        self.email.email = None
+
     def __str__(self) -> str:
         return f"Contact name: {self.name} address: {self.address} email: {self.email} birthday: {self.birthday} phones: {'; '.join(p.value for p in self.phones)}"
