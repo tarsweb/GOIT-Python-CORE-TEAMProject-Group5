@@ -1,4 +1,5 @@
-from .fields  import Field
+from .fields import Field
+
 
 class Address(Field):
     def __init__(self, address: str):
