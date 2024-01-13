@@ -11,6 +11,7 @@ HANDLERS_SECTIONS = {}
 COMMAND_PROMPT = ">>> "
 COMMAND_USE_SPACER = ("show all", "good bye")
 COMMAND_FOR_BREAK = ("good bye", "close", "exit")
+DATA_FOR_COMMAND = {}
 # COMMAND_HELP = ("help",)
 
 # color for string
@@ -65,7 +66,7 @@ def command_parser(command_string: str) -> tuple:
     return list_command[0].lower(), *list_command[1:]
 
 
-def register(commmand_name: str, section: str = None):
+def register(commmand_name: str, section: str = None, data_for_prompt: dict = None):
     def register_wrapper(func):
         @input_error
         @wraps(func)
@@ -79,13 +80,16 @@ def register(commmand_name: str, section: str = None):
         HANDLERS_SECTIONS.setdefault(key_for_section, [])
         HANDLERS_SECTIONS[key_for_section].append(commmand_name)
 
+        if not data_for_prompt is None:
+            DATA_FOR_COMMAND[commmand_name] = data_for_prompt
+
         return wrapper
 
     return register_wrapper
 
 
 def listener_command_param(add_prompt: str, required: bool) -> tuple:
-    while True :
+    while True:
         param = input(f"{COMMAND_PROMPT}{add_prompt} : ")
 
         result_input = param.strip()
@@ -97,17 +101,20 @@ def listener_command_param(add_prompt: str, required: bool) -> tuple:
 
 
 def listener() -> None:
-
     session = PromptSession()
 
     dict_commands = dict.fromkeys(HANDLERS)
+    for k, v in DATA_FOR_COMMAND.items():
+        dict_commands[k] = dict.fromkeys(v)
     dict_commands.update(dict.fromkeys(COMMAND_FOR_BREAK).items())
 
     completer = NestedCompleter.from_nested_dict(dict_commands)
 
     while True:
         # command_user = input(COMMAND_PROMPT)
-        command_user = session.prompt(COMMAND_PROMPT, completer=completer, auto_suggest=AutoSuggestFromHistory())
+        command_user = session.prompt(
+            COMMAND_PROMPT, completer=completer, auto_suggest=AutoSuggestFromHistory()
+        )
 
         if not len(command_user):
             continue
