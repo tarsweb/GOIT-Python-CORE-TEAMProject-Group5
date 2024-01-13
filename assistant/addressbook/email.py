@@ -15,7 +15,7 @@ class Email(Field):
         self.value = self.__is_valid_email(email)
 
     @staticmethod
-    def __is_valid_email(email: str) :
+    def __is_valid_email(email: str) -> str | Exception:
         email_pattern = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$")
         if isinstance(email, str):
             match_object = email_pattern.match(email)
