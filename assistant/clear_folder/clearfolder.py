@@ -46,12 +46,11 @@ def remove_empty_folders(folder):
 
 def scan_folder(folder_path):
     file_types = {
-        'images': ['jpeg', 'png', 'jpg', 'svg', 'bmp', 'JPEG', 'PNG', 'JPG', 'SVG', 'BMP'],
-        'video': ['avi', 'mp4', 'mov', 'mkv', 'AVI', 'MP4', 'MOV', 'MKV'],
-        'documents': ['doc', 'docx', 'txt', 'pdf', 'xls', 'xlsx', 'pptx', 'DOC', 'DOCX', 'TXT', 'PDF', 'XLS', 'XLSX',
-                      'PPTX'],
-        'audio': ['mp3', 'ogg', 'wav', 'amr', 'MP3', 'OGG', 'WAV', 'AMR'],
-        'archives': ['zip', 'gz', 'tar', 'rar', 'ZIP', 'GZ', 'TAR', 'RAR']
+        'images': ['jpeg', 'png', 'jpg', 'svg', 'bmp', 'gif', 'webp', 'raw', 'JPEG', 'PNG', 'JPG', 'SVG', 'BMP', 'GIF', 'WEBP', 'RAW'],
+        'video': ['avi', 'mp4', 'mov', 'mkv', 'wmv', 'AVI', 'MP4', 'MOV', 'MKV', 'WMV'],
+        'documents': ['doc', 'docx', 'txt', 'pdf', 'xls', 'xlsx', 'pptx', 'csv', 'DOC', 'DOCX', 'TXT', 'PDF', 'XLS', 'XLSX', 'PPTX', 'CSV'],
+        'audio': ['mp3', 'ogg', 'wav', 'amr', 'flac', 'wma', 'MP3', 'OGG', 'WAV', 'AMR', 'FLAC', 'WMA'],
+        'archives': ['zip', 'gz', 'tar', '7z', 'rar', 'ZIP', 'GZ', 'TAR', 'RAR', '7Z']
     }
 
     files_by_type = {category: [] for category in file_types}
