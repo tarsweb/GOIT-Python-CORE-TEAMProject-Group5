@@ -1,11 +1,14 @@
 from functools import wraps
 
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import NestedCompleter
+
 HANDLERS = {}
 HANDLERS_SECTIONS = {}
 COMMAND_PROMT = ">>> "
 COMMAND_USE_SPACER = ("show all", "good bye")
 COMMAND_FOR_BREAK = ("good bye", "close", "exit")
-COMMAND_HELP = ("help",)
+# COMMAND_HELP = ("help",)
 
 # color for string
 ERROR = "\033[91m"
@@ -27,18 +30,21 @@ def get_error_message(message_error: str) -> str:
 
 
 def input_error(func):
+    def string_error_message(message: str) -> str:
+        return message.replace(str(func.__qualname__) + "()", "")
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except TypeError as te:
-            return get_warning_message(func.__name__, str(te))
+            return get_warning_message(func.__name__, string_error_message(str(te)))
         except KeyError as ke:
-            return get_warning_message(func.__name__, str(ke))
+            return get_warning_message(func.__name__, string_error_message(str(ke)))
         except ValueError as ve:
-            return get_warning_message(func.__name__, str(ve))
+            return get_warning_message(func.__name__, string_error_message(str(ve)))
         except IndexError as ie:
-            return get_warning_message(func.__name__, str(ie))
+            return get_warning_message(func.__name__, string_error_message(str(ie)))
 
     return wrapper
 
@@ -65,8 +71,8 @@ def register(commmand_name: str, section: str = None):
             return result
 
         HANDLERS[commmand_name] = wrapper
-        
-        key_for_section = "users" if  not section else section
+
+        key_for_section = "users" if not section else section
         HANDLERS_SECTIONS.setdefault(key_for_section, [])
         HANDLERS_SECTIONS[key_for_section].append(commmand_name)
 
@@ -75,9 +81,19 @@ def register(commmand_name: str, section: str = None):
     return register_wrapper
 
 
+def listener_command():
+    pass
+
+
 def listener() -> None:
+    dict_commands = dict.fromkeys(HANDLERS)
+    dict_commands.update(dict.fromkeys(COMMAND_FOR_BREAK).items())
+
+    completer = NestedCompleter.from_nested_dict(dict_commands)
+
     while True:
-        command_user = input(COMMAND_PROMT)
+        # command_user = input(COMMAND_PROMT)
+        command_user = prompt(COMMAND_PROMT, completer=completer)
 
         if not len(command_user):
             continue
