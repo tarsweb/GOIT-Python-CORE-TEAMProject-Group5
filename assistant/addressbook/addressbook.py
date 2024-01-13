@@ -1,10 +1,12 @@
 from collections import UserDict
+import pickle
+
 from .record import Record
 
-
 class AddressBook(UserDict):
-    # def __init__(self):
-    #     super().__init__()
+    def __init__(self):
+        super().__init__()
+        self.load_data()
 
     def add(self, record: Record) -> None:
         self.data[record.name.name] = record
@@ -18,13 +20,30 @@ class AddressBook(UserDict):
             return self.data[name]
 
     def search(self, search_string: str) -> list:
-        pass
+        result = []
+        for record in self.data.values():
+            if record.name.name.find(search_string) != -1:
+                result.append(record.name)
+                continue
+            for phone_number in record.phones:
+                if phone_number.phone.find(search_string) != -1:
+                    result.append(record.name)
+                break
+
+        return result
 
     def save_data(self):
-        pass
+        with open("db_contact.bin", "wb") as file:
+            pickle.dump(self, file)
 
     def load_data(self):
-        pass
+        try:
+            with open("db_contact.bin", "rb") as file:
+                unpacked = pickle.load(file)
+            # self.limit = unpacked.limit
+            self.data = unpacked.data
+        except FileNotFoundError:
+            pass
 
     def __iter__(self):
         return iter(self.data)
