@@ -23,9 +23,9 @@ class Email(Field):
             if match_object is not None:
                 return match_object.group()
             else:
-                raise ValueError ("Invalid email")
+                raise ValueError("Invalid email")
         else:
-            raise ValueError ("Invalid email")
+            raise ValueError("Invalid email")
 
     def __str__(self):
         return "unknown" if self.email is None else str(self.email)
