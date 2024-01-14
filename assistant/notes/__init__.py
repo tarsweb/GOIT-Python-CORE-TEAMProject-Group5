@@ -23,8 +23,16 @@ def initialize():
         """
         Show all notes
         """
+        return notes.show_all_notes()
+    
+    @register("note-find")
+    def find(index: int) -> None:
+        """
+        Find notes by index
+        """
+        index = int(index)
+        note = notes.find(index)
+        return str(note)
+        
 
-        list_notes = list(
-            get_success_message(f"{notes.index(note) + 1} : {note}") for note in notes
-        )
-        return "\n".join(list_notes)
+
