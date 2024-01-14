@@ -43,6 +43,7 @@ class Note(UserList):
         mathces = [str(record) for record in self.data if 
                    pattern.search(record.note)]
         if mathces:
+            
             return mathces
         else:
             return ("Збігів не знайдено")
