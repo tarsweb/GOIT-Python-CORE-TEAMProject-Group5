@@ -6,6 +6,8 @@ from cli_utils import (
     get_warning_message,
     listener_command_param as listener_field,
     print_records,
+    CustomPrompt,
+    CustomCompleter,
 )
 
 from .addressbook import AddressBook
@@ -37,26 +39,54 @@ def initialize():
             record = Record(name)
 
         # key : "field name" , value : tuple(handler, required (True | False)) | handler
-        fields_contact = {
-            f"add-contact `{name}` address": record.add_address,
-            f"add-contact `{name}` email": (record.add_email, True),
-            f"add-contact `{name}` birthday": record.add_birthday,
-        }
+        custom_prompt = f"add-contact `{name}`"
+        # fields_contact = {
+        #     f"{custom_prompt} address": record.add_address,
+        #     f"{custom_prompt} email": (record.add_email, True),
+        #     f"{custom_prompt} birthday": record.add_birthday,
+        # }
 
-        for fields, handler in fields_contact.items():
-            required = False
-            if isinstance(handler, tuple):
-                handler, required = handler
-            while True:
-                result_input = listener_field(fields, required)
-                if len(result_input) == 0 and not required:
-                    break
+        # for fields, handler in fields_contact.items():
+        #     required = False
+        #     if isinstance(handler, tuple):
+        #         handler, required = handler
+        #     while True:
+        #         result_input = listener_field(fields, required)
+        #         if len(result_input) == 0 and not required:
+        #             break
 
+        #         try:
+        #             handler(result_input)
+        #             break
+        #         except Exception as e:
+        #             print(get_warning_message(handler.__name__, e))
+
+        def parser_phone(value):
+            if len(value) == 0:
+                return ("close",)
+            return "add", value
+
+        def aply_res(handler):
+            def res(*agrs):
                 try:
-                    handler(result_input)
-                    break
+                    handler(*agrs)
+                    print("Add ?")
                 except Exception as e:
                     print(get_warning_message(handler.__name__, e))
+
+            return res
+
+        phone_handler = {"add": aply_res(record.add_phone), "close": print}
+
+        phone_prompt = CustomPrompt(
+            f"{custom_prompt} Phone ",
+            None,
+            ("n", "no", "NO"),
+            parser_phone,
+            phone_handler,
+            "--phone number--",
+        )
+        phone_prompt()
 
         # if not record.find_phone(phone_number) is None:
         #     raise ValueError(f"Phone number `{phone_number}` in contact `{name}` exist")

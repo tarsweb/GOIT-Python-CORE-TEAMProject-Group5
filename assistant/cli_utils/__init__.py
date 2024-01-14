@@ -9,6 +9,9 @@ from .utils import (
     HANDLERS_SECTIONS,
     COMMAND_FOR_BREAK,
 )
+from .custom_prompt import CustomPrompt
+from .custom_completion import CustomCompleter
+
 from .printing import print_records
 
 
@@ -46,4 +49,6 @@ __all__ = [
     "get_warning_message",
     "show_register_command",
     "print_records",
+    "CustomPrompt", 
+    "CustomCompleter"
 ]

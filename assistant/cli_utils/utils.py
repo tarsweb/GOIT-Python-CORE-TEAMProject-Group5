@@ -12,7 +12,6 @@ COMMAND_PROMPT = ">>> "
 COMMAND_USE_SPACER = ("show all", "good bye")
 COMMAND_FOR_BREAK = ("good bye", "close", "exit")
 DATA_FOR_COMMAND = {}
-# COMMAND_HELP = ("help",)
 
 # color for string
 ERROR = "\033[91m"
@@ -88,7 +87,7 @@ def register(commmand_name: str, section: str = None, data_for_prompt: dict = No
     return register_wrapper
 
 
-def listener_command_param(add_prompt: str, required: bool) -> tuple:
+def listener_command_param(add_prompt: str, required: bool) -> str:
     while True:
         param = input(f"{COMMAND_PROMPT}{add_prompt} : ")
 
@@ -113,7 +112,11 @@ def dict_commands() -> dict:
 
 
 def listener() -> None:
-    session = PromptSession()
+    session = PromptSession(
+        COMMAND_PROMPT, 
+        complete_while_typing=True, 
+        mouse_support=True
+    )
 
     completer = NestedCompleter.from_nested_dict(dict_commands())
     update_data_for_command(completer)
@@ -121,11 +124,8 @@ def listener() -> None:
     while True:
         # command_user = input(COMMAND_PROMPT)
         command_user = session.prompt(
-            COMMAND_PROMPT,
             completer=completer,
             auto_suggest=AutoSuggestFromHistory(),
-            complete_while_typing=True,
-            mouse_support=True,
         )
 
         if len(command_user) == 0:
