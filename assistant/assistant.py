@@ -20,7 +20,6 @@ def add(num: int) -> int:
 
     return num * 2
 
-
 def main():
     addressbook.initialize()
     notes.initialize()

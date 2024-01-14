@@ -1,6 +1,5 @@
 from functools import wraps
-from prompt_toolkit import prompt
-from prompt_toolkit.completion import WordCompleter
+
 
 HANDLERS = {}
 COMMAND_PROMT = ">>> "
@@ -73,10 +72,8 @@ def register(commmand_name: str):
 
 
 def listener():
-    completer = WordCompleter(['hello', 'add', 'contact-add', 'show_record',
-                               'note-add', 'note-show', 'good bye', 'close', 'exit','note-find' ], ignore_case=True)
     while True:
-        command_user = prompt(COMMAND_PROMT, completer=completer)
+        command_user = input(COMMAND_PROMT)
 
         if not len(command_user):
             continue
