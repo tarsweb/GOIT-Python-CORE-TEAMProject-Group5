@@ -1,5 +1,5 @@
 from assistant.cli_utils import register, listener, show_register_command
-from assistant.addressbook import initialize as initialize_addressbook 
+from assistant.addressbook import initialize as initialize_addressbook
 from assistant.notes import initialize as initialize_notes
 from assistant.clear_folder import initialize as initialize_clean_folder
 
