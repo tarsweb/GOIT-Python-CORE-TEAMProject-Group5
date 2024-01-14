@@ -1,7 +1,7 @@
-from cli_utils import register, listener, show_register_command
-import addressbook
-import notes
-import clear_folder
+from assistant.cli_utils import register, listener, show_register_command
+from assistant.addressbook import initialize as initialize_addressbook 
+from assistant.notes import initialize as initialize_notes
+from assistant.clear_folder import initialize as initialize_clean_folder
 
 
 # Example (приклад)
@@ -23,10 +23,14 @@ def add(num: int) -> int:
 
 
 def main():
-    addressbook.initialize()
-    notes.initialize()
-    clear_folder.initialize()
-    
+    # addressbook.initialize()
+    # notes.initialize()
+    # clear_folder.initialize()
+
+    initialize_addressbook()
+    initialize_notes()
+    initialize_clean_folder()
+
     print(show_register_command())
     listener()
 

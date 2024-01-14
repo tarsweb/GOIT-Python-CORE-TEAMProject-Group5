@@ -1,6 +1,6 @@
 from functools import wraps
 
-from cli_utils import (
+from assistant.cli_utils import (
     register,
     get_success_message,
     get_warning_message,

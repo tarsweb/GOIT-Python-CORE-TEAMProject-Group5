@@ -1,6 +1,6 @@
 from .notes import Note
 from .record import Record
-from cli_utils import register, get_success_message
+from assistant.cli_utils import register, get_success_message
 
 
 def initialize():

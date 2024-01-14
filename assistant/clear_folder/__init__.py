@@ -1,4 +1,4 @@
-from cli_utils import register, get_success_message
+from assistant.cli_utils import register, get_success_message
 
 
 def initialize():
