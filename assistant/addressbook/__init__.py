@@ -85,6 +85,7 @@ def initialize():
             parser_phone,
             phone_handler,
             "--phone number--",
+            required=True
         )
         phone_prompt()
 
