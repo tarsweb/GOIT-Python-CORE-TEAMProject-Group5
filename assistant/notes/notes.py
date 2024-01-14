@@ -25,11 +25,6 @@ class Note(UserList):
 
 
     def show_all_notes(self):
-        # if self.data:
-        #     for i, note in enumerate(self.data, start=1):
-                # notes_1 = ([f"№ of note: : {i}", f"Text :{note.note}", f"Creation time: {note.creation_time}",
-                #                 f" Tags: {', '.join(note.tags)}"])
-                # notes.append(notes_1)
         if not self.data:
             raise ValueError('Ви не додали жодної нотатки')
         return ', '.join(map(str, self.data)) 
