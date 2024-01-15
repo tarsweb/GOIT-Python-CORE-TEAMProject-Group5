@@ -7,7 +7,6 @@ from cli_utils import (
     register,
     get_success_message,
     get_warning_message,
-    listener_command_param as listener_field,
     print_records,
     CustomPrompt,
     CustomCompleter,
