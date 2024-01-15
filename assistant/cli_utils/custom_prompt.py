@@ -60,6 +60,7 @@ class CustomPrompt:
         while True:
             input_text = session.prompt(
                 completer=self.completer,
+                complete_while_typing=True,
                 auto_suggest=AutoSuggestFromHistory(),
             ).strip()
 
