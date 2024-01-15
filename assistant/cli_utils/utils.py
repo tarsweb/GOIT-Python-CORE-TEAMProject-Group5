@@ -5,6 +5,7 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
+from .message import get_warning_message, get_success_message, get_error_message
 
 HANDLERS = {}
 HANDLERS_SECTIONS = {}
@@ -12,24 +13,6 @@ COMMAND_PROMPT = ">>> "
 COMMAND_USE_SPACER = ("show all", "good bye")
 COMMAND_FOR_BREAK = ("good bye", "close", "exit")
 DATA_FOR_COMMAND = {}
-
-# color for string
-ERROR = "\033[91m"
-SUCCESS = "\033[92m"
-WARNING = "\033[33m"
-RESET = "\033[0m"
-
-
-def get_warning_message(func_name: str, message_warning: str) -> str:
-    return f"{WARNING}!!! {func_name} command : {message_warning}{RESET}"
-
-
-def get_success_message(message_success: str) -> str:
-    return f"{SUCCESS}{message_success}{RESET}"
-
-
-def get_error_message(message_error: str) -> str:
-    return f"{ERROR}{message_error}{RESET}"
 
 
 def input_error(func):
@@ -57,7 +40,7 @@ def command_parser(command_string: str) -> tuple:
     if command.lower() in COMMAND_USE_SPACER:
         list_command = [command]
     else:
-        list_command = command.split()
+        list_command = command.split(maxsplit=1)
 
     if len(list_command) == 1:
         return list_command[0].lower(), None
@@ -111,38 +94,38 @@ def dict_commands() -> dict:
     return commands
 
 
-def listener() -> None:
-    session = PromptSession(
-        COMMAND_PROMPT, 
-        complete_while_typing=True, 
-        mouse_support=True
-    )
+# def listener() -> None:
+#     session = PromptSession(
+#         COMMAND_PROMPT, 
+#         complete_while_typing=True, 
+#         mouse_support=True
+#     )
 
-    completer = NestedCompleter.from_nested_dict(dict_commands())
-    update_data_for_command(completer)
+#     completer = NestedCompleter.from_nested_dict(dict_commands())
+#     update_data_for_command(completer)
 
-    while True:
-        # command_user = input(COMMAND_PROMPT)
-        command_user = session.prompt(
-            completer=completer,
-            auto_suggest=AutoSuggestFromHistory(),
-        )
+#     while True:
+#         # command_user = input(COMMAND_PROMPT)
+#         command_user = session.prompt(
+#             completer=completer,
+#             auto_suggest=AutoSuggestFromHistory(),
+#         )
 
-        if len(command_user) == 0:
-            continue
+#         if len(command_user) == 0:
+#             continue
 
-        command, *args = command_parser(command_user)
+#         command, *args = command_parser(command_user)
 
-        if command in COMMAND_FOR_BREAK:
-            print(f"{SUCCESS}Good bye!{RESET}")
-            break
+#         if command in COMMAND_FOR_BREAK:
+#             print(get_success_message("Good bye!"))
+#             break
 
-        if HANDLERS.get(command):
-            if all(args):
-                print(HANDLERS[command](*args))
-            else:
-                print(HANDLERS[command]())
-        else:
-            print(get_error_message(f"Unknown command : {command}"))
+#         if HANDLERS.get(command):
+#             if all(args):
+#                 print(HANDLERS[command](*args))
+#             else:
+#                 print(HANDLERS[command]())
+#         else:
+#             print(get_error_message(f"Unknown command : {command}"))
 
-        update_data_for_command(completer)
+#         update_data_for_command(completer)

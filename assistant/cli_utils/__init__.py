@@ -1,16 +1,21 @@
 from copy import deepcopy
 from .utils import (
     register,
-    listener,
+    # listener,
     listener_command_param,
+    HANDLERS_SECTIONS,
+    COMMAND_FOR_BREAK,
+    command_parser,
+    HANDLERS,
+    dict_commands
+)
+from .message import (
     get_success_message,
     get_warning_message,
     get_error_message,
-    HANDLERS_SECTIONS,
-    COMMAND_FOR_BREAK,
 )
-from .custom_prompt import CustomPrompt
-from .custom_completion import CustomCompleter
+from .custom_prompt import CustomPrompt, break_prompt
+from .custom_completion import CustomCompleter , get_nested_completer
 
 from .printing import print_records
 
@@ -35,6 +40,21 @@ def show_register_command() -> str:
     return get_success_message(f"All command : \n\t {format_commands}")
 
 
+def listener():
+
+    completer = get_nested_completer(dict_commands())
+
+    main_prompt = CustomPrompt(
+        "",
+        completer,
+        COMMAND_FOR_BREAK,
+        command_parser,
+        HANDLERS,
+    )
+
+    main_prompt()
+
+
 @register("help", "system")
 def command_help():
     return show_register_command()
@@ -49,6 +69,7 @@ __all__ = [
     "get_warning_message",
     "show_register_command",
     "print_records",
-    "CustomPrompt", 
-    "CustomCompleter"
+    "CustomPrompt",
+    "CustomCompleter",
+    "break_prompt"
 ]
