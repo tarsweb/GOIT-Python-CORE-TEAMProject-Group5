@@ -2,7 +2,7 @@ from .fields import Field
 
 
 class Address(Field):
-    def __init__(self, address: str):
+    def __init__(self, address: str)-> None:
         super().__init__(address)
 
     @property

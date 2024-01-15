@@ -146,17 +146,7 @@ def initialize():
                 required=required,
                 ignore_empty_command=False,
             )
-            # actions_prompt.command_prompt = f"{custom_prompt}{action}"
-            # actions_prompt.command_parser = command_parser
-            # actions_prompt.command_handler =  {"add": aply_res(handler), "close": print}
-            # actions_prompt.required = required
-
             actions_prompt()
-
-        # if not record.find_phone(phone_number) is None:
-        #     raise ValueError(f"Phone number `{phone_number}` in contact `{name}` exist")
-
-        # record.add_phone(phone_number)
 
         book.add(record)
 
@@ -172,20 +162,20 @@ def initialize():
 
         return get_success_message(f"Contact `{name}` edit")
 
-    @register("edit-contact-birthday", section=section)
-    @save_data
-    def edit_birthday(name: str, date: str = None) -> str:
-        record = book.find(name)
+    # @register("edit-contact-birthday", section=section)
+    # @save_data
+    # def edit_birthday(name: str, date: str = None) -> str:
+    #     record = book.find(name)
 
-        if record is None:
-            raise ValueError(f"Contact with name `{name}` not exist")
+    #     if record is None:
+    #         raise ValueError(f"Contact with name `{name}` not exist")
 
-        if date is None:
-            record.remove_birthday()
-        else:
-            record.edit_birthday(date)
+    #     if date is None:
+    #         record.remove_birthday()
+    #     else:
+    #         record.edit_birthday(date)
 
-        return get_success_message(f"Contact `{name}` birthday edit")
+    #     return get_success_message(f"Contact `{name}` birthday edit")
 
     @register("search-contact", section=section)
     def search(string_search: str):
@@ -208,7 +198,7 @@ def initialize():
         """
         return print_records(list(book.data.values()))
 
-    @register("del-contact", section=section, data_for_prompt=book)
+    @register("remove-contact", section=section, data_for_prompt=book)
     @save_data
     def delete(name: str) -> str:
         """
