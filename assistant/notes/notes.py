@@ -1,6 +1,6 @@
 import re
 from collections import UserList
-from prettytable import PrettyTable
+
 
 from .record import Record
 
@@ -10,8 +10,7 @@ import os
 
 class Note(UserList):
 
-    def __init__(self):
-        self.data = []
+
 
     def add(self, record: Record) -> None:
         self.data.append(record)
@@ -30,17 +29,13 @@ class Note(UserList):
         return ', '.join(map(str, self.data)) 
 
     def find(self, index: int) -> Record | None:
-        index = index - 1
-        print(index) 
-        if (len(self.data)) > index:
-            found_note = f"№ of note: {index+1}, Text : {self.data[index].note}, Creation time: {self.data[index].creation_time}, Tags:{self.data[index].tags} " 
-            return found_note
-        else:
-            raise ValueError('Немає нотатки з таким номером')
+        if index > len(self.data):
+            return None
+        return self.data[index]
 
     def search(self, search_string: str) -> list:
         pattern = re.compile(search_string, re.IGNORECASE)
-        mathces = [str(record) for record in self.data if 
+        mathces = [str(record.note) for record in self.data if 
                    pattern.search(record.note)]
         if mathces:
             
@@ -49,11 +44,11 @@ class Note(UserList):
             return ("Збігів не знайдено")
 
     def add_tag_to_note(self, note_number, tag):
-        note_number = note_number-1
-        if note_number < len(self.data):
-            self.data[note_number].add_tag(tag)
+        note = self.find(note_number)
+        if note is not None:
+            note.add_tag(tag)
         else:
-            raise ValueError("Немає нотатки з таким номером.")
+            raise ValueError(f"Запис з номером {note_number} не знайдено.")
         
     def edit_note(self, note_number, new_text):
         note_number = note_number-1
@@ -72,7 +67,7 @@ class Note(UserList):
 
 
     def find_notes_by_tags(self, tag):
-        notes = [str(note) for note in self.data if tag in note.tags ]
+        notes = [str(note) for note in self.data if tag in note.tags]
         return notes if notes else 'Немає нотаток з таким тегом'
     
     def sort_by_tags(self):
@@ -100,5 +95,3 @@ class Note(UserList):
     def __next__(self):
         pass
 
-
-notes = Note()
