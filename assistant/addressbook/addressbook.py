@@ -52,8 +52,7 @@ class AddressBook(UserDict):
                 }
                 database["book"].setdefault(name, record)
         with open(file="db.json", mode="w", encoding="utf8") as file:
-            text = json.dumps(database)
-            file.write(text)
+            json.dump(database, file, indent=4, ensure_ascii=False)
 
     def load_data(self) -> None:
         with suppress(FileNotFoundError):
