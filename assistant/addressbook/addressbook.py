@@ -1,11 +1,6 @@
 from collections import UserDict
 from contextlib import suppress
 import json
-
-# import pickle
-
-from common.json_dumps import addressbook_save, addressbook_load
-
 from .record import Record
 
 
