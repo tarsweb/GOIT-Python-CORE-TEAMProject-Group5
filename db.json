@@ -15,6 +15,43 @@
             "email": "dfg@sdf.com",
             "birthday": "",
             "phones": []
+        },
+        "Test": {
+            "name": "Test",
+            "address": "",
+            "email": "test@test.com",
+            "birthday": "",
+            "phones": [
+                "+38(068)123-45-45"
+            ]
+        },
+        "Test2": {
+            "name": "Test2",
+            "address": "Address",
+            "email": "te@dsa.com",
+            "birthday": "2011.11.15",
+            "phones": [
+                "+975(555)123-1-24"
+            ]
+        },
+        "Test3": {
+            "name": "Test3",
+            "address": "USA Colorado 10253",
+            "email": "t@dd.ua",
+            "birthday": "",
+            "phones": [
+                "+1(555)555-23-255"
+            ]
+        },
+        "Test4": {
+            "name": "Test4",
+            "address": "",
+            "email": "un@dsdsd.com",
+            "birthday": "",
+            "phones": [
+                "+1(555)256-23-258",
+                "+1(555)256-23-245"
+            ]
         }
     },
     "notes": [
@@ -54,8 +91,8 @@
         },
         {
             "text": "Кіриліця тест",
-            "tags": [ 
-                "якийсь текст" 
+            "tags": [
+                "якийсь текст"
             ]
         }
     ]
