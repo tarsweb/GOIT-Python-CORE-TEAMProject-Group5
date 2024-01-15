@@ -13,7 +13,7 @@ class Note(UserList):
         self.data.append(record)
 
     def delete(self, index: int) -> None:
-        pass
+        self.data.remove(index)
 
     def find(self, index: int) -> Record | None:
         if len(self.data) > index:
@@ -33,8 +33,7 @@ class Note(UserList):
                 ]
                 database["notes"] = records
         with open(file="db.json", mode="w", encoding="utf8") as file:
-            text = json.dumps(database)
-            file.write(text)
+            json.dump(database, file, indent=4, ensure_ascii=False)
 
     def load_data(self) -> None:
         with suppress(FileNotFoundError):
