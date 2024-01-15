@@ -18,9 +18,7 @@ class Email(Field):
     def __is_valid_email(self, email):
         if isinstance(email, str):
             match_object = self.email_pattern.match(email)
-            print(match_object)
             if match_object is not None:
-                print(0)
                 return match_object.group()
             else:
                 print('Invalid email')

@@ -1,5 +1,5 @@
-from .fields import Field
-
+from fields import Field
+import re
 
 class Phone(Field):
     # реалізація класу
@@ -16,6 +16,11 @@ class Phone(Field):
 
     @staticmethod
     def __is_valid_phone_number(phone_number: str) -> str:
-        if len(phone_number) == 10 and phone_number.isdigit():
-            return phone_number
-        raise ValueError(f"Phone {phone_number} not valid")
+        phone_number_pattern = re.compile(r'^\+\d{12}$')
+        match_object = phone_number_pattern.match(phone_number)
+        if match_object is not None:
+            print(match_object.group())
+            return match_object.group()
+        else:
+            print(f"Phone {phone_number} not valid")
+
