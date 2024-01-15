@@ -3,8 +3,6 @@ from functools import partial
 from copy import deepcopy
 from .utils import (
     register,
-    # listener,
-    listener_command_param,
     HANDLERS_SECTIONS,
     COMMAND_FOR_BREAK,
     command_parser,
@@ -46,6 +44,7 @@ def show_register_command() -> str:
 def listener():
 
     completer = get_nested_completer(dict_commands())
+    update_data_for_command(completer)
 
     main_prompt = CustomPrompt(
         command_prompt="",
@@ -67,7 +66,6 @@ def command_help():
 __all__ = [
     "register",
     "listener",
-    "listener_command_param",
     "get_success_message",
     "get_error_message",
     "get_warning_message",
