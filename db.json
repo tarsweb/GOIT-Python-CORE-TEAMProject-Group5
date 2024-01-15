@@ -19,9 +19,21 @@
     },
     "notes": [
         {
-            "text": "dfasdfs",
+            "text": "text1",
             "tags": [
-                "asdfd"
+                "fvfdvdf"
+            ]
+        },
+        {
+            "text": "tex2",
+            "tags": [
+                "dfsgdf"
+            ]
+        },
+        {
+            "text": "tex3",
+            "tags": [
+                "dfdfv"
             ]
         }
     ]

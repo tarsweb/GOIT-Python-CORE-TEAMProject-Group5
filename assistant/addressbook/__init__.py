@@ -206,7 +206,6 @@ def initialize():
         """
         Show all record
         """
-        # list_record = list(get_success_message(f"{book[record]}") for record in book)
         return print_records(list(book.data.values()))
 
     @register("del-contact", section=section, data_for_prompt=book)

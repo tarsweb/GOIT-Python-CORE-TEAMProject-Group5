@@ -20,8 +20,11 @@ def print_records(records: [ClassVar]) -> ColorTable:
         for field_name in pt.field_names:
             class_atr = getattr(record, field_name)
             if isinstance(class_atr, Iterable):
-                atr_array = [str(el) for el in class_atr]
-                row_array.append(", ".join(atr_array))
+                if isinstance(class_atr, str):
+                    row_array.append(class_atr)
+                else:
+                    atr_array = [str(el) for el in class_atr]
+                    row_array.append(", ".join(atr_array))
             else:
                 row_array.append(str(class_atr))
         pt.add_row(row_array)
@@ -29,5 +32,5 @@ def print_records(records: [ClassVar]) -> ColorTable:
     pt.align = "c"
     pt.align["name"] = "l"
     pt.align["phones"] = "l"
-    
+
     return pt

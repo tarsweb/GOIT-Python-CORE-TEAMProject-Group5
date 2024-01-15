@@ -1,10 +1,12 @@
+from functools import wraps
+from cli_utils.printing import print_records
 from cli_utils import (
     register,
     get_success_message,
     get_warning_message,
     CustomCompleter,
     CustomPrompt,
-    break_prompt
+    break_prompt,
 )
 
 from .notes import Note
@@ -16,6 +18,15 @@ def initialize():
 
     section = "notes"
 
+    def save_data(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            result = func(*args, **kwargs)
+            notes.save_data()
+            return result
+
+        return wrapper
+
     def handler_data_prompt(data):
         return {
             data.index(i)
@@ -24,6 +35,7 @@ def initialize():
         }
 
     @register("add-note", section=section)
+    @save_data
     def add(text: str) -> None:
         """
         Add notes
@@ -46,7 +58,7 @@ def initialize():
             return res
 
         def command_parser(value: str) -> tuple:
-            if len(value) == 0 :
+            if len(value) == 0:
                 return ("break",)
 
             return "add", value
@@ -94,7 +106,7 @@ def initialize():
                 "break": break_prompt,
             },
             placeholder="type tag",
-            ignore_empty_command=False
+            ignore_empty_command=False,
         )
 
         tag_prompt()
@@ -109,6 +121,7 @@ def initialize():
         data_for_prompt=notes,
         handler_data_prompt=handler_data_prompt,
     )
+    @save_data
     def edit(index: str) -> None:
         """
         Edit note
@@ -126,10 +139,7 @@ def initialize():
         Show all notes
         """
 
-        list_notes = list(
-            get_success_message(f"{notes.index(note) + 1} : {note}") for note in notes
-        )
-        if len(list_notes) == 0:
+        if len(notes.data) == 0:
             raise ValueError("No notes")
 
-        return "\n".join(list_notes)
+        return print_records(notes.data)
