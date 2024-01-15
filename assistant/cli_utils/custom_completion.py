@@ -1,5 +1,10 @@
 from typing import Iterable
-from prompt_toolkit.completion import CompleteEvent, Completer, Completion
+from prompt_toolkit.completion import (
+    CompleteEvent,
+    Completer,
+    Completion,
+    NestedCompleter,
+)
 from prompt_toolkit.document import Document
 
 
@@ -25,3 +30,7 @@ class CustomCompleter(Completer):
                     display=value.get("display", None),
                     display_meta=value.get("display_meta", None),
                 )
+
+
+def get_nested_completer(dict_commads :dict) -> NestedCompleter:
+    return NestedCompleter.from_nested_dict(dict_commads)

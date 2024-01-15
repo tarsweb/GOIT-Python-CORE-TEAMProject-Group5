@@ -1,13 +1,16 @@
 from functools import wraps
+from collections import namedtuple
+from functools import partial
+
 
 from cli_utils import (
     register,
     get_success_message,
     get_warning_message,
-    listener_command_param as listener_field,
     print_records,
     CustomPrompt,
     CustomCompleter,
+    break_prompt,
 )
 
 from .addressbook import AddressBook
@@ -38,56 +41,117 @@ def initialize():
         if record is None:
             record = Record(name)
 
-        # key : "field name" , value : tuple(handler, required (True | False)) | handler
         custom_prompt = f"add-contact `{name}`"
-        # fields_contact = {
-        #     f"{custom_prompt} address": record.add_address,
-        #     f"{custom_prompt} email": (record.add_email, True),
-        #     f"{custom_prompt} birthday": record.add_birthday,
-        # }
 
-        # for fields, handler in fields_contact.items():
-        #     required = False
-        #     if isinstance(handler, tuple):
-        #         handler, required = handler
-        #     while True:
-        #         result_input = listener_field(fields, required)
-        #         if len(result_input) == 0 and not required:
-        #             break
-
-        #         try:
-        #             handler(result_input)
-        #             break
-        #         except Exception as e:
-        #             print(get_warning_message(handler.__name__, e))
-
-        def parser_phone(value):
-            if len(value) == 0:
-                return ("close",)
-            return "add", value
-
-        def aply_res(handler):
+        def apply_result(handler, post_handler=None):
             def res(*agrs):
                 try:
                     handler(*agrs)
-                    print("Add ?")
+                    if callable(post_handler):
+                        return post_handler()
                 except Exception as e:
                     print(get_warning_message(handler.__name__, e))
 
             return res
 
-        phone_handler = {"add": aply_res(record.add_phone), "close": print}
+        def command_parser(required: bool, value: str) -> tuple:
+            if required is None:
+                required = False
+            if len(value) == 0 and not required:
+                return ("break",)
 
-        phone_prompt = CustomPrompt(
-            f"{custom_prompt} Phone ",
-            None,
-            ("n", "no", "NO"),
-            parser_phone,
-            phone_handler,
-            "--phone number--",
-            required=True
+            return "add", value
+
+        def global_post_handler(record_field: str) -> None | str:
+            try:
+                if str(getattr(record, record_field)):
+                    return break_prompt()
+            except Exception:
+                return
+
+        def phone_post_handler():
+            try:
+                if len(record.phones) > 0:
+                    answer = False
+
+                    def answer_command_parser(value):
+                        nonlocal answer
+                        if value.lower() in ("n", "no") or len(value) == 0:
+                            answer = True
+                            return ("no",)
+
+                    questions_dict = {
+                        "yes": {"display_meta": "add more phone"},
+                        "no": {"display_meta": " no enough "},
+                    }
+                    add_more_completer = CustomCompleter(questions_dict)
+                    prompt_add_more = CustomPrompt(
+                        command_prompt=f"{custom_prompt} {'phone'.capitalize()} Add more ? ",
+                        completer=add_more_completer,
+                        command_for_break=(),
+                        command_parser=answer_command_parser,
+                        command_handler={"yes": None, "no": break_prompt},
+                        placeholder="yes/no",
+                        ignore_empty_command=False,
+                    )
+                    prompt_add_more()
+
+                    if answer:
+                        return break_prompt()
+
+            except Exception:
+                return
+
+        Action_params = namedtuple(
+            "action_param",
+            ["handler", "post_handler", "required", "multi", "placeholder"],
+            defaults=(None, None, False, False, ""),
         )
-        phone_prompt()
+        # actions_prompt = CustomPrompt(custom_prompt, None, ("N",))
+        actions_contact = {
+            "address": Action_params(
+                record.add_address, partial(global_post_handler, "address")
+            ),
+            "email": Action_params(
+                record.add_email, partial(global_post_handler, "email"), True
+            ),
+            "birthday": Action_params(
+                record.add_birthday, partial(global_post_handler, "birthday")
+            ),
+            "phone": Action_params(
+                record.add_phone, phone_post_handler, False, True, "--phone number--"
+            ),
+        }
+
+        for action, param_actions in actions_contact.items():
+            required = False
+            multi = False
+            placeholder = ""
+            post_handler = None
+            if isinstance(param_actions, (tuple, namedtuple)):
+                handler, post_handler, required, multi, placeholder = param_actions
+            else:
+                handler = param_actions
+
+            actions_prompt = CustomPrompt(
+                command_prompt=f"{custom_prompt} {action.capitalize()} ",
+                completer=None,
+                command_for_break=("n", "no", "NO"),
+                command_parser=partial(command_parser, required),
+                command_handler={
+                    "add": apply_result(handler, post_handler),
+                    "break": break_prompt,
+                },
+                placeholder=placeholder if placeholder else action,
+                required=required,
+                ignore_empty_command=False,
+            )
+            # actions_prompt.command_prompt = f"{custom_prompt}{action}"
+            # actions_prompt.command_parser = command_parser
+            # actions_prompt.command_handler =  {"add": aply_res(handler), "close": print}
+            # actions_prompt.required = required
+
+            actions_prompt()
 
         # if not record.find_phone(phone_number) is None:
         #     raise ValueError(f"Phone number `{phone_number}` in contact `{name}` exist")

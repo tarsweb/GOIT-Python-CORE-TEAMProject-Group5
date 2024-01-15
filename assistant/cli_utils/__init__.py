@@ -1,16 +1,22 @@
+from functools import partial
+
 from copy import deepcopy
 from .utils import (
     register,
-    listener,
-    listener_command_param,
+    HANDLERS_SECTIONS,
+    COMMAND_FOR_BREAK,
+    command_parser,
+    HANDLERS,
+    dict_commands,
+    update_data_for_command
+)
+from .message import (
     get_success_message,
     get_warning_message,
     get_error_message,
-    HANDLERS_SECTIONS,
-    COMMAND_FOR_BREAK,
 )
-from .custom_prompt import CustomPrompt
-from .custom_completion import CustomCompleter
+from .custom_prompt import CustomPrompt, break_prompt
+from .custom_completion import CustomCompleter , get_nested_completer
 
 from .printing import print_records
 
@@ -35,6 +41,23 @@ def show_register_command() -> str:
     return get_success_message(f"All command : \n\t {format_commands}")
 
 
+def listener():
+
+    completer = get_nested_completer(dict_commands())
+    update_data_for_command(completer)
+
+    main_prompt = CustomPrompt(
+        command_prompt="",
+        completer=completer,
+        command_for_break=COMMAND_FOR_BREAK,
+        command_parser=command_parser,
+        command_handler=HANDLERS,
+        post_handlers=[partial(update_data_for_command, completer)]
+    )
+
+    main_prompt()
+
+
 @register("help", "system")
 def command_help():
     return show_register_command()
@@ -43,12 +66,12 @@ def command_help():
 __all__ = [
     "register",
     "listener",
-    "listener_command_param",
     "get_success_message",
     "get_error_message",
     "get_warning_message",
     "show_register_command",
     "print_records",
-    "CustomPrompt", 
-    "CustomCompleter"
+    "CustomPrompt",
+    "CustomCompleter",
+    "break_prompt"
 ]
