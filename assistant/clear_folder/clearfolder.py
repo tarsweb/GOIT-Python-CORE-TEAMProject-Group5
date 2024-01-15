@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 import zipfile
+import sys
 
 
 def normalize(name):
@@ -30,7 +31,7 @@ def normalize(name):
 
 
 def move_files(source, destination):
-    for root, dirs, files in os.walk(source):
+    for root, _, files in os.walk(source):
         for file in files:
             file_path = os.path.join(root, file)
             destination_path = os.path.join(destination, file)
@@ -38,7 +39,7 @@ def move_files(source, destination):
 
 
 def remove_empty_folders(folder):
-    for root, dirs, files in os.walk(folder, topdown=False):
+    for root, dirs, _ in os.walk(folder, topdown=False):
         for i in dirs:
             dir_path = os.path.join(root, i)
             if not os.listdir(dir_path):
@@ -147,8 +148,7 @@ def organize_files(files, destination_path):
             print(f"Unknown category: {category}")
 
 
-def clearfolder():
-    folder_path = input("Enter the folder path: ")
+def clearfolder(folder_path):
     destination_path = folder_path
     files, unknown_extensions = scan_folder(folder_path)
 
@@ -165,5 +165,6 @@ def clearfolder():
     print(', '.join(unknown_extensions))
 
 
-if __name__ == "__main__":
-    clearfolder()
+# if __name__ == "__main__":
+#     folder_path = sys.argv[1]
+#     clearfolder(folder_path)
