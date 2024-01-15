@@ -1,3 +1,5 @@
+from functools import partial
+
 from copy import deepcopy
 from .utils import (
     register,
@@ -7,7 +9,8 @@ from .utils import (
     COMMAND_FOR_BREAK,
     command_parser,
     HANDLERS,
-    dict_commands
+    dict_commands,
+    update_data_for_command
 )
 from .message import (
     get_success_message,
@@ -45,11 +48,12 @@ def listener():
     completer = get_nested_completer(dict_commands())
 
     main_prompt = CustomPrompt(
-        "",
-        completer,
-        COMMAND_FOR_BREAK,
-        command_parser,
-        HANDLERS,
+        command_prompt="",
+        completer=completer,
+        command_for_break=COMMAND_FOR_BREAK,
+        command_parser=command_parser,
+        command_handler=HANDLERS,
+        post_handlers=[partial(update_data_for_command, completer)]
     )
 
     main_prompt()

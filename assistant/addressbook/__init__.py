@@ -50,7 +50,6 @@ def initialize():
                     handler(*agrs)
                     if callable(post_handler):
                         return post_handler()
-                    print("do post")
                 except Exception as e:
                     print(get_warning_message(handler.__name__, e))
 
@@ -81,7 +80,7 @@ def initialize():
                         if value.lower() in ("n", "no") or len(value) == 0:
                             answer = True
                             return ("no",)
-                        
+
                     questions_dict = {
                         "yes": {"display_meta": "add more phone"},
                         "no": {"display_meta": " no enough "},

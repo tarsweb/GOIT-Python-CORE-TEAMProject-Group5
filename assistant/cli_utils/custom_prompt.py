@@ -19,6 +19,7 @@ class CustomPrompt:
         # single: bool = True,
         required: bool = False,
         ignore_empty_command: bool = True,
+        post_handlers=None,
     ) -> None:
         self.__command_prompt = command_prompt
         self.command_for_break = command_for_break
@@ -29,6 +30,7 @@ class CustomPrompt:
         # self.__single = single
         self.__required = required
         self.ignore_empty_command = ignore_empty_command
+        self.post_handlers = post_handlers
 
     @property
     def command_prompt(self):
@@ -59,13 +61,12 @@ class CustomPrompt:
             input_text = session.prompt(
                 completer=self.completer,
                 auto_suggest=AutoSuggestFromHistory(),
-            )
+            ).strip()
 
             if len(input_text) == 0 and self.ignore_empty_command:
                 continue
 
             if input_text in self.command_for_break and not self.__required:
-                print("TEST break")
                 break
 
             command, *args = self.command_parser(input_text)  # maybe **kwargs not now
@@ -83,6 +84,12 @@ class CustomPrompt:
 
             if not (result is None or not result):
                 print(result)
+
+            # do post
+            if isinstance(self.post_handlers, list):
+                for post_handler in self.post_handlers:
+                    if callable(post_handler):
+                        post_handler()
 
 
 def break_prompt():

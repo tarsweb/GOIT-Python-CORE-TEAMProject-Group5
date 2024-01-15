@@ -18,6 +18,11 @@ class Record:
         self.phones = []
 
     def add_phone(self, phone_number: str) -> None:
+        phone = self.find_phone(phone_number)
+
+        if phone:
+            raise ValueError(f"Phone number {phone_number} exist")
+
         self.phones.append(Phone(phone_number))
 
     def remove_phone(self, phone_number: str) -> None:
