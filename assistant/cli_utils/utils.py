@@ -1,4 +1,5 @@
 from functools import wraps
+from collections import namedtuple
 
 # from prompt_toolkit import prompt
 from prompt_toolkit import PromptSession
@@ -6,6 +7,7 @@ from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
 from .message import get_warning_message, get_success_message, get_error_message
+from .custom_completion import CustomCompleter, get_nested_completer
 
 HANDLERS = {}
 HANDLERS_SECTIONS = {}
@@ -13,6 +15,8 @@ COMMAND_PROMPT = ">>> "
 COMMAND_USE_SPACER = ("show all", "good bye")
 COMMAND_FOR_BREAK = ("good bye", "close", "exit")
 DATA_FOR_COMMAND = {}
+
+CommandDataParam = namedtuple("CommandDataParam", ["data", "handler"])
 
 
 def input_error(func):
@@ -48,7 +52,12 @@ def command_parser(command_string: str) -> tuple:
     return list_command[0].lower(), *list_command[1:]
 
 
-def register(commmand_name: str, section: str = None, data_for_prompt: dict = None):
+def register(
+    commmand_name: str,
+    section: str = None,
+    data_for_prompt: dict = None,
+    handler_data_prompt=None,
+):
     def register_wrapper(func):
         @input_error
         @wraps(func)
@@ -63,28 +72,23 @@ def register(commmand_name: str, section: str = None, data_for_prompt: dict = No
         HANDLERS_SECTIONS[key_for_section].append(commmand_name)
 
         if not data_for_prompt is None:
-            DATA_FOR_COMMAND[commmand_name] = data_for_prompt
+            DATA_FOR_COMMAND[commmand_name] = CommandDataParam(data_for_prompt, handler_data_prompt)
 
         return wrapper
 
     return register_wrapper
 
 
-def listener_command_param(add_prompt: str, required: bool) -> str:
-    while True:
-        param = input(f"{COMMAND_PROMPT}{add_prompt} : ")
-
-        result_input = param.strip()
-
-        if not (required and len(result_input) == 0):
-            break
-
-    return result_input
-
-
 def update_data_for_command(completer: NestedCompleter) -> None:
     for k, v in DATA_FOR_COMMAND.items():
-        completer.options[k] = NestedCompleter.from_nested_dict(dict.fromkeys(v))
+        data, handler = v
+        if callable(handler):
+            update_data = handler(data)
+            update_c = CustomCompleter(update_data)
+        else:
+            update_data = dict.fromkeys(data)
+            update_c = get_nested_completer(update_data)
+        completer.options[k] = update_c
 
 
 def dict_commands() -> dict:
@@ -93,11 +97,22 @@ def dict_commands() -> dict:
 
     return commands
 
+    # result = {}
+    # for c in HANDLERS:
+    #     result.setdefault(c, {})
+    #     sub = []
+    #     for section, items in HANDLERS_SECTIONS.items():
+    #         if c in items:
+    #             sub.append(section)
+    #     result[c] = {"display_meta": "#".join(sub).upper()}
+
+    # return result
+
 
 # def listener() -> None:
 #     session = PromptSession(
-#         COMMAND_PROMPT, 
-#         complete_while_typing=True, 
+#         COMMAND_PROMPT,
+#         complete_while_typing=True,
 #         mouse_support=True
 #     )
 
