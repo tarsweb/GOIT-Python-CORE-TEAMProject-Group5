@@ -1,1 +1,28 @@
-{"book": {"test": {"name": "test", "address": "address", "email": "email@email.com", "birthday": "1988.06.05", "phones": ["0937078383"]}}, "notes": [{"text": "dfasdfs", "tags": ["asdfd"]}]}
+{
+    "book": {
+        "test": {
+            "name": "test",
+            "address": "address",
+            "email": "email@email.com",
+            "birthday": "1988.06.05",
+            "phones": [
+                "0937078383"
+            ]
+        },
+        "test2": {
+            "name": "test2",
+            "address": "",
+            "email": "dfg@sdf.com",
+            "birthday": "",
+            "phones": []
+        }
+    },
+    "notes": [
+        {
+            "text": "dfasdfs",
+            "tags": [
+                "asdfd"
+            ]
+        }
+    ]
+}

@@ -43,12 +43,14 @@ class AddressBook(UserDict):
             with suppress(AttributeError):
                 record = {
                     "name": record_data.name.value,
-                    "address": record_data.address.value,
+                    "address": record_data.address.value or "",
                     "email": record_data.email.value,
-                    "birthday": record_data.birthday.birthday_date.strftime("%Y.%m.%d"),
+                    "birthday": record_data.birthday.birthday_date.strftime("%Y.%m.%d")
+                    if record_data.birthday.value
+                    else "",
                     "phones": [record.value for record in record_data.phones],
                 }
-                database["book"] = {name: record}
+                database["book"].setdefault(name, record)
         with open(file="db.json", mode="w", encoding="utf8") as file:
             text = json.dumps(database)
             file.write(text)
@@ -63,7 +65,8 @@ class AddressBook(UserDict):
                         record = Record(name)
                         record.add_address(record_data["address"])
                         record.add_email(record_data["email"])
-                        record.add_birthday(record_data["birthday"])
+                        if len(record_data["birthday"]) > 0:
+                            record.add_birthday(record_data["birthday"])
                         for phone in record_data["phones"]:
                             record.add_phone(phone)
                         self.data[name] = record
