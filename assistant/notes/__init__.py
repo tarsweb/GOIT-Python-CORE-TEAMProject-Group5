@@ -143,3 +143,27 @@ def initialize():
             raise ValueError("No notes")
 
         return print_records(notes.data)
+
+    @register(
+        "remove-note",
+        section=section,
+        data_for_prompt=notes,
+        handler_data_prompt=handler_data_prompt,
+    )
+    def delete(index: str) -> str:
+        """
+        Remove contact by name
+        """
+        try:
+            index = int(index) - 1
+        except ValueError as e:
+            raise ValueError("Index of note may be integer") from e
+
+        record = notes.find(index)
+
+        if record is None:
+            raise ValueError(f"Note with index `{index}` not exist")
+
+        notes.delete(record)
+
+        return get_success_message(f"Note with `{index}` deleted")
