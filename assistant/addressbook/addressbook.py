@@ -1,7 +1,8 @@
 from collections import UserDict
-import pickle
-
+from contextlib import suppress
+import json
 from .record import Record
+
 
 class AddressBook(UserDict):
     def __init__(self):
@@ -33,17 +34,39 @@ class AddressBook(UserDict):
         return result
 
     def save_data(self):
-        with open("db_contact.bin", "wb") as file:
-            pickle.dump(self, file)
+        database = {}
+        with suppress(FileNotFoundError):
+            with open(file="db.json", mode="r", encoding="utf8") as file:
+                text = file.read()
+                database = json.loads(text)
+        for name, record_data in self.data.items():
+            with suppress(AttributeError):
+                record = {
+                    "name": record_data.name.value,
+                    "address": record_data.address.value,
+                    "email": record_data.email.value,
+                    "birthday": record_data.birthday.birthday_date.strftime("%Y.%m.%d"),
+                    "phones": record_data.phones.value,
+                }
+                database["book"] = {name: record}
+        with open(file="db.json", mode="w", encoding="utf8") as file:
+            text = json.dumps(database)
+            file.write(text)
 
-    def load_data(self):
-        try:
-            with open("db_contact.bin", "rb") as file:
-                unpacked = pickle.load(file)
-            # self.limit = unpacked.limit
-            self.data = unpacked.data
-        except FileNotFoundError:
-            pass
+    def load_data(self) -> None:
+        with suppress(FileNotFoundError):
+            with open(file="db.json", mode="r", encoding="utf8") as file:
+                text = file.read()
+                data = json.loads(text)
+                if data:
+                    for name, record_data in data["book"].items():
+                        record = Record(name)
+                        record.add_address(record_data["address"])
+                        record.add_email(record_data["email"])
+                        record.add_birthday(record_data["birthday"])
+                        for phone in record_data["phones"]:
+                            record.add_phone(phone)
+                        self.data[name] = record
 
     def __iter__(self):
         return iter(self.data)
