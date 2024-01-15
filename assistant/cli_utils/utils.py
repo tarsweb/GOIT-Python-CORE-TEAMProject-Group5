@@ -1,5 +1,6 @@
 from functools import wraps
 
+
 HANDLERS = {}
 COMMAND_PROMT = ">>> "
 COMMAND_USE_SPACER = ("show all", "good bye")
