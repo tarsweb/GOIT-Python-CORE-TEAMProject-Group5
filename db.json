@@ -6,7 +6,7 @@
             "email": "email@email.com",
             "birthday": "1988.06.05",
             "phones": [
-                "0937078383"
+                "+380937078383"
             ]
         },
         "test2": {
@@ -27,13 +27,35 @@
         {
             "text": "tex2",
             "tags": [
-                "dfsgdf"
+                "dfsgdf",
+                "dfdfv"
             ]
         },
         {
             "text": "tex3",
             "tags": [
                 "dfdfv"
+            ]
+        },
+        {
+            "text": "Tooooolong TEXT",
+            "tags": [
+                "super text",
+                "text"
+            ]
+        },
+        {
+            "text": "TEST техт",
+            "tags": []
+        },
+        {
+            "text": "Тест супер",
+            "tags": []
+        },
+        {
+            "text": "Кіриліця тест",
+            "tags": [ 
+                "якийсь текст" 
             ]
         }
     ]
