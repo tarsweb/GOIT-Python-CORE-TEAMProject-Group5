@@ -46,7 +46,7 @@ class AddressBook(UserDict):
                     "address": record_data.address.value,
                     "email": record_data.email.value,
                     "birthday": record_data.birthday.birthday_date.strftime("%Y.%m.%d"),
-                    "phones": record_data.phones.value,
+                    "phones": [record.value for record in record_data.phones],
                 }
                 database["book"] = {name: record}
         with open(file="db.json", mode="w", encoding="utf8") as file:
