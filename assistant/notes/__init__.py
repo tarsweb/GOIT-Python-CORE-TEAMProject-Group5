@@ -192,6 +192,7 @@ def initialize():
         data_for_prompt=notes,
         handler_data_prompt=handler_data_prompt,
     )
+    @save_data
     def delete(index: str) -> str:
         """
         Remove contact by name
