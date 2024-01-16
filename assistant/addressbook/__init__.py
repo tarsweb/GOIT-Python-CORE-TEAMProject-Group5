@@ -182,20 +182,24 @@ def initialize():
         """
         Search name or phone in book
         """
-        result_list = book.search(string_search)
+
+        if len(book.data) == 0:
+            raise ValueError("No contact")
+        
+        result_list = book.search(string_search.lower())
         if len(result_list) == 0:
             raise ValueError("Nothing found")
 
-        tab_result = [f"|{'NAME':^10}|"]
-        tab_result.extend(list(f"|{str(name):^10}|" for name in result_list))
-
-        return get_success_message("\n".join(tab_result))
+        return print_records(result_list)
 
     @register("show-contacts", section=section)
     def show_record():
         """
         Show all record
         """
+        if len(book.data) == 0:
+            raise ValueError("No contact")
+        
         return print_records(list(book.data.values()))
 
     @register("remove-contact", section=section, data_for_prompt=book)
