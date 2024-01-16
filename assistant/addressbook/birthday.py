@@ -31,12 +31,12 @@ class Birthday(Field):
 
             return birthdate.date()
 
-        if not birthday is None:
-            pattern = re.compile(
-                r"^(\d{4}\.\d{1,2}\.\d{1,2}|\d{1,2}\.\d{1,2}\.\d{4})$"
-            )
-            if not pattern.match(birthday) :
-                raise ValueError("The date format must match (yyyy.mm.dd) or (dd.mm.yyyy)")
+        if birthday is not None:
+            pattern = re.compile(r"^(\d{4}\.\d{1,2}\.\d{1,2}|\d{1,2}\.\d{1,2}\.\d{4})$")
+            if not pattern.match(birthday):
+                raise ValueError(
+                    "The date format must match (yyyy.mm.dd) or (dd.mm.yyyy)"
+                )
 
             return parse_date(birthday)
 
