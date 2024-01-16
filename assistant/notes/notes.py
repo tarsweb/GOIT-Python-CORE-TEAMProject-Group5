@@ -12,15 +12,27 @@ class Note(UserList):
     def add(self, record: Record) -> None:
         self.data.append(record)
 
-    def delete(self, index: int) -> None:
-        self.data.remove(index)
+    def delete(self, record: Record) -> None:
+        self.data.remove(record)
 
     def find(self, index: int) -> Record | None:
         if len(self.data) > index:
             return self.data[index]
 
+    def find_notes_by_tags(self, tag: str) -> list:
+        return list(record for record in self.data if tag in record.tags)
+
     def search(self, search_string: str) -> list:
-        pass
+        result = []
+        for record in self.data:
+            if record.text.lower().find(search_string) != -1:
+                result.append(record)
+                continue
+            for tag in record.tags:
+                if tag.lower().find(search_string) != -1:
+                    result.append(record)
+                    break
+        return result
 
     def save_data(self) -> None:
         database = {}

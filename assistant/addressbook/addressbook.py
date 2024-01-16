@@ -23,13 +23,19 @@ class AddressBook(UserDict):
     def search(self, search_string: str) -> list:
         result = []
         for record in self.data.values():
-            if record.name.name.find(search_string) != -1:
-                result.append(record.name)
+            if record.name.name.lower().find(search_string) != -1:
+                result.append(record)
+                continue
+            if record.address.address.lower().find(search_string) != -1:
+                result.append(record)
+                continue
+            if record.email.email.lower().find(search_string) != -1:
+                result.append(record)
                 continue
             for phone_number in record.phones:
                 if phone_number.phone.find(search_string) != -1:
-                    result.append(record.name)
-                break
+                    result.append(record)
+                    break
 
         return result
 

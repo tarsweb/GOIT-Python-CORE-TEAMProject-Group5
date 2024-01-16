@@ -34,6 +34,13 @@ def initialize():
             for i in data
         }
 
+    def handler_data_prompt_tag(data):
+        result = []
+
+        [result.extend(i.tags) for i in data]
+
+        return dict.fromkeys(set(result))
+
     @register("add-note", section=section)
     @save_data
     def add(text: str) -> None:
@@ -132,6 +139,41 @@ def initialize():
             raise ValueError(f"Note with index `{index}` not exist")
 
         return get_success_message(f"Note `{record}` edit")
+
+    @register("search-note", section=section)
+    def search(string_search: str):
+        """
+        Search text or tag in notes
+        """
+        if len(notes.data) == 0:
+            raise ValueError("No notes")
+
+        result_list = notes.search(string_search.lower())
+
+        if len(result_list) == 0:
+            raise ValueError("Nothing found")
+
+        return print_records(result_list)
+
+    @register(
+        "search-note-tag",
+        section=section,
+        data_for_prompt=notes,
+        handler_data_prompt=handler_data_prompt_tag,
+    )
+    def search_tag(string_search: str):
+        """
+        Search tag in tags
+        """
+        if len(notes.data) == 0:
+            raise ValueError("No notes")
+
+        result_list = notes.find_notes_by_tags(string_search.lower())
+
+        if len(result_list) == 0:
+            raise ValueError("Nothing found")
+
+        return print_records(result_list)
 
     @register("show-notes", section=section)
     def show() -> str:
