@@ -106,7 +106,7 @@ def initialize():
         tag_prompt = CustomPrompt(
             command_prompt=f"{custom_prompt} {actions.capitalize()} ",
             completer=None,
-            command_for_break=("n", "no", "NO"),
+            command_for_break=("n", "no"),
             command_parser=command_parser,
             command_handler={
                 "add": apply_result(record.add_tag, tag_post_handler),
@@ -133,7 +133,13 @@ def initialize():
         """
         Edit note
         """
-        record = notes.find(int(index))
+
+        try:
+            index = int(index) - 1
+        except ValueError as e:
+            raise ValueError("Index for note may be integer") from e
+
+        record = notes.find(index)
 
         if record is None:
             raise ValueError(f"Note with index `{index}` not exist")
@@ -200,7 +206,7 @@ def initialize():
         try:
             index = int(index) - 1
         except ValueError as e:
-            raise ValueError("Index of note may be integer") from e
+            raise ValueError("Index for note may be integer") from e
 
         record = notes.find(index)
 
