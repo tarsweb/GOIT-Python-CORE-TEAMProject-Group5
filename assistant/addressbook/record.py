@@ -52,7 +52,7 @@ class Record:
     def edit_birthday(self, day_birthday: str) -> None:
         self.birthday.birthday_date = day_birthday
 
-    def days_to_birthday(self) -> int:
+    def days_to_birthday(self) -> int | None:
         if self.birthday.birthday_date is not None:
             current_day = date.today()
             offset_year = 0

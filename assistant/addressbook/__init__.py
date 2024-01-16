@@ -177,6 +177,23 @@ def initialize():
 
     #     return get_success_message(f"Contact `{name}` birthday edit")
 
+    @register("contact-birthday", section=section)
+    def contact_birthday_from(count_days: str):
+        try:
+            count_days = int(count_days)
+        except ValueError as e:
+            raise ValueError("Param may be integer") from e
+
+        result_list = list(
+            record
+            for record in book.values()
+            if record.days_to_birthday() == count_days
+        )
+        if len(result_list) == 0:
+            raise ValueError(f"Nothing contact birthday in {count_days} days")
+
+        return print_records(result_list)
+
     @register("search-contact", section=section)
     def search(string_search: str):
         """
@@ -185,7 +202,7 @@ def initialize():
 
         if len(book.data) == 0:
             raise ValueError("No contact")
-        
+
         result_list = book.search(string_search.lower())
         if len(result_list) == 0:
             raise ValueError("Nothing found")
@@ -199,7 +216,7 @@ def initialize():
         """
         if len(book.data) == 0:
             raise ValueError("No contact")
-        
+
         return print_records(list(book.data.values()))
 
     @register("remove-contact", section=section, data_for_prompt=book)
