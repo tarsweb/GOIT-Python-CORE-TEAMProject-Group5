@@ -88,7 +88,7 @@ def initialize():
                     prompt_add_more = CustomPrompt(
                         command_prompt=f"{custom_prompt} {'phone'.capitalize()} Add more ? ",
                         completer=add_more_completer,
-                        command_for_break=(),
+                        command_for_break=tuple(),
                         command_parser=answer_command_parser,
                         command_handler={"yes": None, "no": break_prompt},
                         placeholder="yes/no",
@@ -136,7 +136,7 @@ def initialize():
             actions_prompt = CustomPrompt(
                 command_prompt=f"{custom_prompt} {action.capitalize()} ",
                 completer=None,
-                command_for_break=("n", "no", "NO"),
+                command_for_break=("n", "no"),
                 command_parser=partial(command_parser, required),
                 command_handler={
                     "add": apply_result(handler, post_handler),

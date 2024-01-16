@@ -89,7 +89,7 @@ def initialize():
                     prompt_add_more = CustomPrompt(
                         command_prompt=f"{custom_prompt} {actions.capitalize()} Add more ? ",
                         completer=add_more_completer,
-                        command_for_break=(),
+                        command_for_break=tuple(),
                         command_parser=answer_command_parser,
                         command_handler={"yes": None, "no": break_prompt},
                         placeholder="yes/no",

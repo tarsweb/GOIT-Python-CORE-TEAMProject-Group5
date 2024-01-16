@@ -64,7 +64,7 @@ class CustomPrompt:
             if len(input_text) == 0 and self.ignore_empty_command:
                 continue
 
-            if input_text in self.command_for_break and not self.__required:
+            if input_text.lower() in self.command_for_break and not self.__required:
                 break
 
             command, *args = self.command_parser(input_text)  # maybe **kwargs not now
