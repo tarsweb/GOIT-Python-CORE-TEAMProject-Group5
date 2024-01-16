@@ -198,9 +198,11 @@ def initialize():
             else:
                 command = value.split(maxsplit=2)
 
+            if len(command) == 1:
+                return (*command, None)
             return (
                 "-".join(map(lambda n: n.lower(), command[:2])),
-                (tuple(map(lambda n: n.lower(), command[:2])), command[2:]),
+                tuple(map(lambda n: n.lower(), command[:2])), command[2:]
             )
 
         def save_changes():
@@ -209,7 +211,7 @@ def initialize():
         def cancel_changes():
             nonlocal exc_dict
             exc_dict = {}
-            return break_prompt
+            return break_prompt()
 
         handelrs = {
             "name-edit": None,
@@ -223,14 +225,12 @@ def initialize():
             "phones-add": temp_record.add_phone,
             "phones-edit": temp_record.edit_phone,
             "phones-remove": temp_record.remove_phone,
-            "save": save_changes,
-            "cancel": cancel_changes,
         }
 
         def handler(*args):
             nonlocal exc_dict
             print("handler", *args)
-            _command, data = args[0][0], args[0][1]
+            _command, data = args
             command_execute = handelrs.get("-".join(_command))
             try:
                 if command_execute.__name__ == "edit_phone":
@@ -263,7 +263,7 @@ def initialize():
                 completer_command,
             )
         )
-        dict_command.update(dict.fromkeys(("save",)))
+        dict_command.update(dict.fromkeys(("save", "cancel")))
 
         completer = get_nested_completer(dict_command)
 
@@ -278,8 +278,8 @@ def initialize():
             completer.options[k] = completer_command
 
         command_handler = {
-            "save": apply_result(handler,None),
-            "cancel": handler,
+            "save": save_changes, #apply_result(handler,None),
+            "cancel": cancel_changes,
         }
         _ = [
             command_handler.update({f"{i}-edit": handler, f"{i}-remove": handler})
@@ -299,6 +299,11 @@ def initialize():
         actions_prompt()
 
         print(*exc_dict)
+
+        for k,v in exc_dict.items():
+            for action in v:
+                for command , data in action.items():
+                    eval(f"record.{command}('{' '.join(data)}')")
 
         return get_success_message(f"Contact `{name}` edit")
 
