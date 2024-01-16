@@ -27,19 +27,17 @@ def initialize():
 
         return wrapper
 
-    def handler_data_prompt(data):
+    def handler_data_prompt(data) -> dict:
         return {
             data.index(i)
             + 1: {"display": i.text[:20], "display_meta": ", ".join(i.tags)}
             for i in data
         }
 
-    def handler_data_prompt_tag(data):
+    def handler_data_prompt_tag(data) -> dict:
         result = []
-
-        [result.extend(i.tags) for i in data]
-
-        return dict.fromkeys(set(result))
+        _ = set(result.extend(i.tags) for i in data)
+        return dict.fromkeys(result, )
 
     @register("add-note", section=section)
     @save_data
