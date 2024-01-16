@@ -169,6 +169,7 @@ def initialize():
         )
 
         exc_dict = {}
+        _ = [exc_dict.update({f"{i}": []}) for i in field_names]
 
         def apply_result(handler, post_handler=None):
             def res(*agrs):
@@ -181,18 +182,34 @@ def initialize():
 
             return res
 
+        req = ("name", "email")
+
         def command_parser(required: bool, value: str) -> tuple:
             if required is None:
                 required = False
             if len(value) == 0 and not required:
+                # if value.startswith("save"):
+                #     return save_changes()
                 return ("break",)
 
-            command = value.strip().split(maxsplit=2)
+            value.strip()
+            if value.startswith(req):
+                command = value.split(maxsplit=1)
+            else:
+                command = value.split(maxsplit=2)
 
             return (
                 "-".join(map(lambda n: n.lower(), command[:2])),
                 (tuple(map(lambda n: n.lower(), command[:2])), command[2:]),
             )
+
+        def save_changes():
+            return break_prompt()
+
+        def cancel_changes():
+            nonlocal exc_dict
+            exc_dict = {}
+            return break_prompt
 
         handelrs = {
             "name-edit": None,
@@ -206,25 +223,32 @@ def initialize():
             "phones-add": temp_record.add_phone,
             "phones-edit": temp_record.edit_phone,
             "phones-remove": temp_record.remove_phone,
+            "save": save_changes,
+            "cancel": cancel_changes,
         }
 
         def handler(*args):
-            nonlocal exc_dict, handelrs
+            nonlocal exc_dict
             print("handler", *args)
             _command, data = args[0][0], args[0][1]
             command_execute = handelrs.get("-".join(_command))
             try:
-                command_execute(" ".join(data))
+                if command_execute.__name__ == "edit_phone":
+                    command_execute(" ".join(data).split(maxsplit=1))
+                else:
+                    if len(data) == 0:
+                        command_execute()
+                    else:
+                        command_execute(" ".join(data))
                 field, _ = _command
-                exc_dict.setdefault(field, [])
-                exc_dict[field] += [{command_execute.__name__: data}]
+                if field in exc_dict:
+                    exc_dict[field] += [*exc_dict[field], {command_execute.__name__: data}]
             except Exception as e:
                 print(get_warning_message(command_execute.__name__, e))
 
             print(_command, data)
 
         completer_command = get_nested_completer(dict.fromkeys(("edit", "remove")))
-        completer_req_field_command = get_nested_completer(dict.fromkeys(("edit",)))
 
         completers_iterable = {}
         for iterable_f in field_dict:
@@ -232,31 +256,36 @@ def initialize():
             completers_for_iter = get_nested_completer(dict.fromkeys(atr_array))
             completers_iterable[iterable_f.capitalize()] = completers_for_iter
 
-        req = ("name", "email")
+        dict_command = dict.fromkeys(list(f.capitalize() for f in req))
+        dict_command.update(
+            dict.fromkeys(
+                list(f.capitalize() for f in field_names if f not in req),
+                completer_command,
+            )
+        )
+        dict_command.update(dict.fromkeys(("save",)))
 
-        dict_command = dict.fromkeys(list(f.capitalize() for f in field_names), completer_command)
-        # dict_command.update(dict.fromkeys(list(f.capitalize() for f in req), completer_req_field_command))
-        # dict_command.update(dict.fromkeys(("save",)))
-
-        completer = get_nested_completer(dict.fromkeys(list(f.capitalize() for f in field_names), completer_command))
+        completer = get_nested_completer(dict_command)
 
         for k, v in completers_iterable.items():
             completer_command = get_nested_completer(
-                dict.fromkeys({"add", "edit", "remove"})
+                dict.fromkeys(("add", "edit", "remove"))
             )
             for command in completer_command.options:
-                completer_command.options[command] = v
+                if not command == "add":
+                    completer_command.options[command] = v
+
             completer.options[k] = completer_command
 
         command_handler = {
-            "save": apply_result(handler, None),
-            "break": break_prompt,
+            "save": apply_result(handler,None),
+            "cancel": handler,
         }
         _ = [
             command_handler.update({f"{i}-edit": handler, f"{i}-remove": handler})
             for i in field_names
         ]
-        _ = [command_handler.update({f"{i}-add": handler}for i in field_dict)]
+        _ = [command_handler.update({f"{i}-add": handler}) for i in field_dict]
 
         actions_prompt = CustomPrompt(
             command_prompt=f"{custom_prompt} ",
@@ -265,7 +294,7 @@ def initialize():
             command_parser=partial(command_parser, False),
             command_handler=command_handler,
             placeholder="select field / command",
-            ignore_empty_command=False
+            ignore_empty_command=False,
         )
         actions_prompt()
 
