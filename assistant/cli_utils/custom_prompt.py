@@ -52,15 +52,12 @@ class CustomPrompt:
         session = PromptSession(
             self.command_prompt,
             complete_while_typing=True,
-            enable_history_search=True,
-            mouse_support=True,
             placeholder=self.placeholder,
         )
 
         while True:
             input_text = session.prompt(
                 completer=self.completer,
-                complete_while_typing=True,
                 auto_suggest=AutoSuggestFromHistory(),
             ).strip()
 
