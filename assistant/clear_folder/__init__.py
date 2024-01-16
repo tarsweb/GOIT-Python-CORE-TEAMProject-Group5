@@ -1,7 +1,9 @@
-from cli_utils import register, get_success_message
+from .clearfolder import clearfolder
+from cli_utils import register, print_clear_folder
 
 
 def initialize():
     @register("clear-folder", "cleaner")
     def clean(path_to_dir: str) -> str:
-        return get_success_message(f"report clear {path_to_dir}")
+        result = clearfolder(path_to_dir)
+        return print_clear_folder(result)

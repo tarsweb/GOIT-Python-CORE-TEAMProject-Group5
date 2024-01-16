@@ -8,7 +8,7 @@ from .utils import (
     command_parser,
     HANDLERS,
     dict_commands,
-    update_data_for_command
+    update_data_for_command,
 )
 from .message import (
     get_success_message,
@@ -16,9 +16,9 @@ from .message import (
     get_error_message,
 )
 from .custom_prompt import CustomPrompt, break_prompt
-from .custom_completion import CustomCompleter , get_nested_completer
+from .custom_completion import CustomCompleter, get_nested_completer
 
-from .printing import print_records
+from .printing import print_records, print_clear_folder
 
 
 def add_system_command():
@@ -42,7 +42,6 @@ def show_register_command() -> str:
 
 
 def listener():
-
     completer = get_nested_completer(dict_commands())
     update_data_for_command(completer)
 
@@ -52,7 +51,7 @@ def listener():
         command_for_break=COMMAND_FOR_BREAK,
         command_parser=command_parser,
         command_handler=HANDLERS,
-        post_handlers=[partial(update_data_for_command, completer)]
+        post_handlers=[partial(update_data_for_command, completer)],
     )
 
     main_prompt()
@@ -73,5 +72,6 @@ __all__ = [
     "print_records",
     "CustomPrompt",
     "CustomCompleter",
-    "break_prompt"
+    "break_prompt",
+    "print_clear_folder",
 ]
