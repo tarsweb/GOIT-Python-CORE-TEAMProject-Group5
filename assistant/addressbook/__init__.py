@@ -1,7 +1,7 @@
-from functools import wraps
+from functools import wraps, partial
 from collections import namedtuple
-from functools import partial
-
+from collections.abc import Iterable
+from copy import deepcopy
 
 from cli_utils import (
     register,
@@ -10,7 +10,9 @@ from cli_utils import (
     print_records,
     CustomPrompt,
     CustomCompleter,
+    get_nested_completer,
     break_prompt,
+    Action_params,
 )
 
 from .addressbook import AddressBook
@@ -102,11 +104,6 @@ def initialize():
             except Exception:
                 return
 
-        Action_params = namedtuple(
-            "action_param",
-            ["handler", "post_handler", "required", "multi", "placeholder"],
-            defaults=(None, None, False, False, ""),
-        )
         # actions_prompt = CustomPrompt(custom_prompt, None, ("N",))
         actions_contact = {
             "address": Action_params(
@@ -153,12 +150,126 @@ def initialize():
         return get_success_message(f"Contact `{name}` added")
 
     @register("edit-contact", section=section, data_for_prompt=book)
-    @save_data
+    # @save_data
     def edit(name: str) -> str:
         record = book.find(name)
 
         if record is None:
             raise ValueError(f"Contact with name `{name}` not exist")
+
+        temp_record = deepcopy(record)
+
+        custom_prompt = f"edit-contact `{name}`"
+        field_names = record.__dict__.keys()
+
+        field_dict = list(
+            field
+            for field in field_names
+            if isinstance(getattr(record, field), Iterable)
+        )
+
+        exc_dict = {}
+
+        def apply_result(handler, post_handler=None):
+            def res(*agrs):
+                try:
+                    handler(*agrs)
+                    if callable(post_handler):
+                        return post_handler()
+                except Exception as e:
+                    print(get_warning_message(handler.__name__, e))
+
+            return res
+
+        def command_parser(required: bool, value: str) -> tuple:
+            if required is None:
+                required = False
+            if len(value) == 0 and not required:
+                return ("break",)
+
+            command = value.strip().split(maxsplit=2)
+
+            return (
+                "-".join(map(lambda n: n.lower(), command[:2])),
+                (tuple(map(lambda n: n.lower(), command[:2])), command[2:]),
+            )
+
+        handelrs = {
+            "name-edit": None,
+            "name-remove": None,
+            "address-edit": temp_record.add_address,
+            "address-remove": temp_record.remove_address,
+            "email-edit": temp_record.add_email,
+            "email-remove": temp_record.remove_email,
+            "birthday-edit": temp_record.add_birthday,
+            "birthday-remove": temp_record.remove_birthday,
+            "phones-add": temp_record.add_phone,
+            "phones-edit": temp_record.edit_phone,
+            "phones-remove": temp_record.remove_phone,
+        }
+
+        def handler(*args):
+            nonlocal exc_dict, handelrs
+            print("handler", *args)
+            _command, data = args[0][0], args[0][1]
+            command_execute = handelrs.get("-".join(_command))
+            try:
+                command_execute(" ".join(data))
+                field, _ = _command
+                exc_dict.setdefault(field, [])
+                exc_dict[field] += [{command_execute.__name__: data}]
+            except Exception as e:
+                print(get_warning_message(command_execute.__name__, e))
+
+            print(_command, data)
+
+        completer_command = get_nested_completer(dict.fromkeys(("edit", "remove")))
+        completer_req_field_command = get_nested_completer(dict.fromkeys(("edit",)))
+
+        completers_iterable = {}
+        for iterable_f in field_dict:
+            atr_array = [str(el) for el in getattr(record, iterable_f)]
+            completers_for_iter = get_nested_completer(dict.fromkeys(atr_array))
+            completers_iterable[iterable_f.capitalize()] = completers_for_iter
+
+        req = ("name", "email")
+
+        dict_command = dict.fromkeys(list(f.capitalize() for f in field_names), completer_command)
+        # dict_command.update(dict.fromkeys(list(f.capitalize() for f in req), completer_req_field_command))
+        # dict_command.update(dict.fromkeys(("save",)))
+
+        completer = get_nested_completer(dict.fromkeys(list(f.capitalize() for f in field_names), completer_command))
+
+        for k, v in completers_iterable.items():
+            completer_command = get_nested_completer(
+                dict.fromkeys({"add", "edit", "remove"})
+            )
+            for command in completer_command.options:
+                completer_command.options[command] = v
+            completer.options[k] = completer_command
+
+        command_handler = {
+            "save": apply_result(handler, None),
+            "break": break_prompt,
+        }
+        _ = [
+            command_handler.update({f"{i}-edit": handler, f"{i}-remove": handler})
+            for i in field_names
+        ]
+        _ = [command_handler.update({f"{i}-add": handler}for i in field_dict)]
+
+        actions_prompt = CustomPrompt(
+            command_prompt=f"{custom_prompt} ",
+            completer=completer,
+            command_for_break=("n", "no"),
+            command_parser=partial(command_parser, False),
+            command_handler=command_handler,
+            placeholder="select field / command",
+            ignore_empty_command=False
+        )
+        actions_prompt()
+
+        print(*exc_dict)
 
         return get_success_message(f"Contact `{name}` edit")
 

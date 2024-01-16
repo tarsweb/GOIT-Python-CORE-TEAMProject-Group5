@@ -1,3 +1,4 @@
+from collections import namedtuple
 from typing import Any
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import Completer
@@ -92,3 +93,10 @@ class CustomPrompt:
 
 def break_prompt():
     return "#####break####"
+
+
+Action_params = namedtuple(
+    "action_param",
+    ["handler", "post_handler", "required", "multi", "placeholder"],
+    defaults=(None, None, False, False, ""),
+)

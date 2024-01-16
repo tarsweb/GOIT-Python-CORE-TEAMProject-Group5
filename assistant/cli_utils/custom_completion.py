@@ -32,5 +32,5 @@ class CustomCompleter(Completer):
                 )
 
 
-def get_nested_completer(dict_commads :dict) -> NestedCompleter:
+def get_nested_completer(dict_commads: dict) -> NestedCompleter:
     return NestedCompleter.from_nested_dict(dict_commads)
