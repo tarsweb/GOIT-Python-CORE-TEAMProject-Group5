@@ -34,3 +34,26 @@ def print_records(records: [ClassVar], color: str = "34") -> ColorTable:
     pt.align["phones"] = "l"
 
     return pt
+
+
+def print_clear_folder(records: [dict]) -> ColorTable:
+    pt = ColorTable(
+        theme=Theme(default_color="34"),
+        border=True,
+        header=True,
+        padding_width=2,
+        header_style="upper",
+    )
+
+    pt.field_names = ["type", "files"]
+
+    for record in records:
+        row_array = []
+        for key, value in record.items():
+            row_array.append(key)
+            row_array.append(value)
+        pt.add_row(row_array)
+
+    pt.align = "l"
+
+    return pt
