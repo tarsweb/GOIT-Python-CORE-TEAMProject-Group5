@@ -17,6 +17,9 @@ class Record:
         self.birthday = Birthday(birthday)
         self.phones = []
 
+    def edit_name(self, name: str) -> None:
+        self.name.name = name
+
     def add_phone(self, phone_number: str) -> None:
         phone = self.find_phone(phone_number)
 

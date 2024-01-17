@@ -15,8 +15,9 @@ from .message import (
     get_warning_message,
     get_error_message,
 )
-from .custom_prompt import CustomPrompt, break_prompt
-from .custom_completion import CustomCompleter, get_nested_completer
+
+from .custom_prompt import CustomPrompt, break_prompt, Action_params
+from .custom_completion import CustomCompleter, CustomSingleCompleter, get_nested_completer
 
 from .printing import print_records, print_clear_folder
 
@@ -31,11 +32,11 @@ def add_system_command():
 
 
 def show_register_command() -> str:
-    all_commmands = add_system_command()
+    all_commands = add_system_command()
 
     commands = list(
         f"{section.upper()} : {', '.join(values)}"
-        for section, values in all_commmands.items()
+        for section, values in all_commands.items()
     )
     format_commands = "\n\t ".join(commands)
     return get_success_message(f"All command : \n\t {format_commands}")
@@ -73,5 +74,5 @@ __all__ = [
     "CustomPrompt",
     "CustomCompleter",
     "break_prompt",
-    "print_clear_folder",
+    "Action_params"
 ]
