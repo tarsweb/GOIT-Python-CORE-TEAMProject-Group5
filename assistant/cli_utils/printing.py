@@ -4,9 +4,9 @@ from collections.abc import Iterable
 from prettytable.colortable import ColorTable, Theme
 
 
-def print_records(records: [ClassVar]) -> ColorTable:
+def print_records(records: [ClassVar], color: str = "34") -> ColorTable:
     pt = ColorTable(
-        theme=Theme(default_color="34"),
+        theme=Theme(default_color=color),
         border=True,
         header=True,
         padding_width=2,

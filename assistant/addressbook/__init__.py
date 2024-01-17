@@ -122,7 +122,7 @@ def initialize():
 
         for action, param_actions in actions_contact.items():
             required = False
-            multi = False
+            # multi = False
             placeholder = ""
             post_handler = None
             if isinstance(param_actions, (tuple, namedtuple)):
@@ -150,7 +150,7 @@ def initialize():
         return get_success_message(f"Contact `{name}` added")
 
     @register("edit-contact", section=section, data_for_prompt=book)
-    # @save_data
+    @save_data
     def edit(name: str) -> str:
         record = book.find(name)
 
@@ -159,63 +159,57 @@ def initialize():
 
         temp_record = deepcopy(record)
 
+        record_edit = False
         custom_prompt = f"edit-contact `{name}`"
-        field_names = record.__dict__.keys()
+        field_names = temp_record.__dict__.keys()
 
         field_dict = list(
             field
             for field in field_names
             if isinstance(getattr(record, field), Iterable)
+            and not isinstance(getattr(record, field), str)
         )
 
-        exc_dict = {}
-        _ = [exc_dict.update({f"{i}": []}) for i in field_names]
-
-        def apply_result(handler, post_handler=None):
-            def res(*agrs):
-                try:
-                    handler(*agrs)
-                    if callable(post_handler):
-                        return post_handler()
-                except Exception as e:
-                    print(get_warning_message(handler.__name__, e))
-
-            return res
-
-        req = ("name", "email")
+        required_field = ("name", "email")
 
         def command_parser(required: bool, value: str) -> tuple:
             if required is None:
                 required = False
             if len(value) == 0 and not required:
-                # if value.startswith("save"):
-                #     return save_changes()
                 return ("break",)
 
             value.strip()
-            if value.startswith(req):
-                command = value.split(maxsplit=1)
-            else:
-                command = value.split(maxsplit=2)
+            if value.startswith(
+                tuple(req_command.capitalize() for req_command in required_field)
+            ):
+                value = "".join(
+                    tuple(
+                        value.replace(req_c.capitalize(), f"{req_c.capitalize()} edit")
+                        for req_c in required_field
+                        if value.startswith(req_c.capitalize())
+                    )
+                )
+
+            command = value.split(maxsplit=2)
 
             if len(command) == 1:
                 return (*command, None)
             return (
                 "-".join(map(lambda n: n.lower(), command[:2])),
-                tuple(map(lambda n: n.lower(), command[:2])), command[2:]
+                tuple(map(lambda n: n.lower(), command[:2])),
+                command[2:],
             )
 
         def save_changes():
             return break_prompt()
 
         def cancel_changes():
-            nonlocal exc_dict
-            exc_dict = {}
+            nonlocal record_edit
+            record_edit = False
             return break_prompt()
 
-        handelrs = {
-            "name-edit": None,
-            "name-remove": None,
+        handelrs_record = {
+            "name-edit": temp_record.edit_name,
             "address-edit": temp_record.add_address,
             "address-remove": temp_record.remove_address,
             "email-edit": temp_record.add_email,
@@ -227,85 +221,103 @@ def initialize():
             "phones-remove": temp_record.remove_phone,
         }
 
-        def handler(*args):
-            nonlocal exc_dict
-            print("handler", *args)
+        def command_record_handler(*args):
+            nonlocal record_edit
             _command, data = args
-            command_execute = handelrs.get("-".join(_command))
+            command_execute = handelrs_record.get("-".join(_command))
             try:
                 if command_execute.__name__ == "edit_phone":
-                    command_execute(" ".join(data).split(maxsplit=1))
+                    old_phone, new_phone = " ".join(data).split(maxsplit=1)
+                    command_execute(old_phone, new_phone)
                 else:
-                    if len(data) == 0:
-                        command_execute()
-                    else:
+                    if all(args):
                         command_execute(" ".join(data))
-                field, _ = _command
-                if field in exc_dict:
-                    exc_dict[field] += [*exc_dict[field], {command_execute.__name__: data}]
+                    else:
+                        command_execute()
+                record_edit = True
             except Exception as e:
                 print(get_warning_message(command_execute.__name__, e))
-
-            print(_command, data)
 
         completer_command = get_nested_completer(dict.fromkeys(("edit", "remove")))
 
         completers_iterable = {}
-        for iterable_f in field_dict:
-            atr_array = [str(el) for el in getattr(record, iterable_f)]
-            completers_for_iter = get_nested_completer(dict.fromkeys(atr_array))
-            completers_iterable[iterable_f.capitalize()] = completers_for_iter
 
-        dict_command = dict.fromkeys(list(f.capitalize() for f in req))
+        def upadate_data():
+            nonlocal completers_iterable
+            for iterable_f in field_dict:
+                atr_array = [str(el) for el in getattr(temp_record, iterable_f)]
+                completers_for_iter = get_nested_completer(dict.fromkeys(atr_array))
+                completers_iterable[iterable_f.capitalize()] = completers_for_iter
+
+        dict_command = dict.fromkeys(list(f.capitalize() for f in required_field))
         dict_command.update(
             dict.fromkeys(
-                list(f.capitalize() for f in field_names if f not in req),
+                list(f.capitalize() for f in field_names if f not in required_field),
                 completer_command,
             )
         )
-        dict_command.update(dict.fromkeys(("save", "cancel")))
+        system_commands = ("save", "cancel")
+        dict_command.update(dict.fromkeys(system_commands))
 
         completer = get_nested_completer(dict_command)
+        upadate_data()
 
-        for k, v in completers_iterable.items():
-            completer_command = get_nested_completer(
-                dict.fromkeys(("add", "edit", "remove"))
-            )
-            for command in completer_command.options:
-                if not command == "add":
-                    completer_command.options[command] = v
+        def use_update_data():
+            nonlocal completer
+            for k, v in completers_iterable.items():
+                completer_command = get_nested_completer(
+                    dict.fromkeys(("add", "edit", "remove"))
+                )
+                for command in completer_command.options:
+                    if not command == "add":
+                        completer_command.options[command] = v
 
-            completer.options[k] = completer_command
+                completer.options[k] = completer_command
 
-        command_handler = {
-            "save": save_changes, #apply_result(handler,None),
+        use_update_data()
+
+        prompt_command_handler = {
+            "save": save_changes,  # apply_result(handler,None),
             "cancel": cancel_changes,
+            "break": None,
         }
         _ = [
-            command_handler.update({f"{i}-edit": handler, f"{i}-remove": handler})
+            prompt_command_handler.update(
+                {
+                    f"{i}-edit": command_record_handler,
+                    f"{i}-remove": command_record_handler,
+                }
+            )
             for i in field_names
         ]
-        _ = [command_handler.update({f"{i}-add": handler}) for i in field_dict]
+        _ = [
+            prompt_command_handler.update({f"{i}-add": command_record_handler})
+            for i in field_dict
+        ]
 
         actions_prompt = CustomPrompt(
             command_prompt=f"{custom_prompt} ",
             completer=completer,
-            command_for_break=("n", "no"),
+            command_for_break=(),
             command_parser=partial(command_parser, False),
-            command_handler=command_handler,
+            command_handler=prompt_command_handler,
             placeholder="select field / command",
             ignore_empty_command=False,
+            post_handlers=[upadate_data, use_update_data],
         )
+
         actions_prompt()
 
-        print(*exc_dict)
+        if record_edit:
+            book.data[name] = temp_record
+            new_name = temp_record.name.name
+            if name != new_name:
+                book.data[new_name] = book.data[name]
+                book.data.pop(name)
+                name = new_name
 
-        for k,v in exc_dict.items():
-            for action in v:
-                for command , data in action.items():
-                    eval(f"record.{command}('{' '.join(data)}')")
-
-        return get_success_message(f"Contact `{name}` edit")
+        submessage = "" if record_edit else "cancel "
+        return get_success_message(f"Contact `{name}` {f'{submessage}edited'}")
 
     # @register("edit-contact-birthday", section=section)
     # @save_data

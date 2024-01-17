@@ -52,6 +52,15 @@
                 "+1(555)256-23-258",
                 "+1(555)256-23-245"
             ]
+        },
+        "TEST test edit": {
+            "name": "TEST test edit",
+            "address": "",
+            "email": "test@test.com",
+            "birthday": "",
+            "phones": [
+                "+38(068)123-45-45"
+            ]
         }
     },
     "notes": [
@@ -69,16 +78,17 @@
             ]
         },
         {
-            "text": "tex3",
+            "text": "New text note",
             "tags": [
                 "dfdfv"
             ]
         },
         {
-            "text": "Tooooolong TEXT",
+            "text": "Test notes",
             "tags": [
                 "super text",
-                "text"
+                "text2222",
+                "kkjhsakdjhsa kjsahd ksa hksajdh"
             ]
         },
         {
