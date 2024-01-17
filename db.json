@@ -86,9 +86,8 @@
         {
             "text": "Test notes",
             "tags": [
-                "super text",
-                "text2222",
-                "kkjhsakdjhsa kjsahd ksa hksajdh"
+                "super_text",
+                "text"
             ]
         },
         {
@@ -102,7 +101,7 @@
         {
             "text": "Кіриліця тест",
             "tags": [
-                "якийсь текст"
+                "якийсь_тег"
             ]
         }
     ]
