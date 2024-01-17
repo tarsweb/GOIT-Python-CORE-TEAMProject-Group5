@@ -1,25 +1,12 @@
-from cli_utils import register, listener, show_register_command
-from addressbook import initialize as initialize_addressbook
-from notes import initialize as initialize_notes
-from clear_folder import initialize as initialize_clean_folder
+import sys
+import os
 
+sys.path.append(os.path.join(sys.path[0], "assistant"))
 
-# Example (приклад)
-@register("hello")
-def hello() -> str:
-    return "How can I help you?"
-
-
-# Example (приклад)
-@register("add")
-def add(num: int) -> int:
-    if not isinstance(num, int):
-        try:
-            num = int(num)
-        except ValueError:
-            num = 0
-
-    return num * 2
+from .cli_utils import listener, show_register_command
+from .addressbook import initialize as initialize_addressbook
+from .notes import initialize as initialize_notes
+from .clear_folder import initialize as initialize_clean_folder
 
 
 def main():

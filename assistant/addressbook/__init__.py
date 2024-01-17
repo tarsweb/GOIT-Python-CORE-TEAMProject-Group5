@@ -3,7 +3,7 @@ from collections import namedtuple
 from collections.abc import Iterable
 from copy import deepcopy
 
-from cli_utils import (
+from assistant.cli_utils import (
     register,
     get_success_message,
     get_warning_message,

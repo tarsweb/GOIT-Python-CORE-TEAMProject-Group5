@@ -1,5 +1,5 @@
 from .clearfolder import clearfolder
-from cli_utils import register, print_clear_folder
+from assistant.cli_utils import register, print_clear_folder
 
 
 def initialize():
