@@ -45,7 +45,7 @@ def print_clear_folder(records: [dict]) -> ColorTable:
         header_style="upper",
     )
 
-    pt.field_names = ["type", "files"]
+    pt.field_names = ["type", "Description"]
 
     for record in records:
         row_array = []

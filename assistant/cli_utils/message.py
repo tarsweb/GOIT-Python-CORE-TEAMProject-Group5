@@ -6,6 +6,8 @@ RESET = "\033[0m"
 
 
 def get_warning_message(func_name: str, message_warning: str) -> str:
+    if not func_name:
+        return f"{WARNING}{message_warning}{RESET}"
     return f"{WARNING}!!! {func_name} command : {message_warning}{RESET}"
 
 
